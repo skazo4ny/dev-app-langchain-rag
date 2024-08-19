@@ -1,0 +1,152 @@
+{
+    "Bank to Mobile Wallets": [
+      {
+        "From": "1",
+        "To": "100",
+        "To Mpesa": "0",
+        "To Airtel Money": "0"
+      },
+      {
+        "From": "101",
+        "To": "500",
+        "To Mpesa": "10",
+        "To Airtel Money": "11"
+      },
+      {
+        "From": "501",
+        "To": "1,000",
+        "To Mpesa": "12",
+        "To Airtel Money": "13"
+      },
+      {
+        "From": "1,001",
+        "To": "1,500",
+        "To Mpesa": "14",
+        "To Airtel Money": "20"
+      },
+      {
+        "From": "1,501",
+        "To": "2,500",
+        "To Mpesa": "23",
+        "To Airtel Money": "25"
+      },
+      {
+        "From": "2,501",
+        "To": "3,500",
+        "To Mpesa": "33",
+        "To Airtel Money": "35"
+      },
+      {
+        "From": "3,501",
+        "To": "5,000",
+        "To Mpesa": "43",
+        "To Airtel Money": "45"
+      },
+      {
+        "From": "5,001",
+        "To": "7,500",
+        "To Mpesa": "55",
+        "To Airtel Money": "55"
+      },
+      {
+        "From": "7,501",
+        "To": "20,000",
+        "To Mpesa": "65",
+        "To Airtel Money": "65"
+      },
+      {
+        "From": "20,001",
+        "To": "150,000",
+        "To Mpesa": "67",
+        "To Airtel Money": "65"
+      }
+    ],
+    "Equitel to Other Mobile Wallets": [
+      {
+        "From": "1",
+        "To": "100",
+        "To Mpesa": "0",
+        "To Airtel Money": "0"
+      },
+      {
+        "From": "101",
+        "To": "500",
+        "To Mpesa": "10",
+        "To Airtel Money": "11"
+      },
+      {
+        "From": "501",
+        "To": "1,000",
+        "To Mpesa": "12",
+        "To Airtel Money": "13"
+      },
+      {
+        "From": "1,001",
+        "To": "1,500",
+        "To Mpesa": "14",
+        "To Airtel Money": "20"
+      },
+      {
+        "From": "1,501",
+        "To": "2,500",
+        "To Mpesa": "23",
+        "To Airtel Money": "25"
+      },
+      {
+        "From": "2,501",
+        "To": "3,500",
+        "To Mpesa": "33",
+        "To Airtel Money": "35"
+      },
+      {
+        "From": "3,501",
+        "To": "5,000",
+        "To Mpesa": "43",
+        "To Airtel Money": "45"
+      },
+      {
+        "From": "5,001",
+        "To": "7,500",
+        "To Mpesa": "55",
+        "To Airtel Money": "55"
+      },
+      {
+        "From": "7,501",
+        "To": "20,000",
+        "To Mpesa": "65",
+        "To Airtel Money": "65"
+      },
+      {
+        "From": "20,001",
+        "To": "150,000",
+        "To Mpesa": "67",
+        "To Airtel Money": "65"
+      }
+    ],
+    "Bank to Bank Transfers": [
+      {
+        "Service": "Equity to Equity Account",
+        "Charge (Kshs)": "0"
+      },
+      {
+        "Service": "Equity Account to other Bank accounts (RTGS)",
+        "Charge (Kshs)": "500"
+      },
+      {
+        "Service": "Equity Account to other Bank accounts (Pesalink) 0 - 1,000",
+        "Charge (Kshs)": "0"
+      },
+      {
+        "Service": "Equity Account to other Bank accounts (Pesalink) 1,000 - 100,000",
+        "Charge (Kshs)": "50"
+      },
+      {
+        "Service": "Equity Account to other Bank accounts (Pesalink) 100,001 - 999,000",
+        "Charge (Kshs)": "100"
+      },
+      {
+        "Service": "Cross Boarder (Swift)",
+        "Charge (Kshs)": "1,000"
+      }
+    ]
+  }

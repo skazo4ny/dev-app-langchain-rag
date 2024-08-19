@@ -1,0 +1,18 @@
+[
+    {
+      "Service": "Agent Annual Renewal fees",
+      "Charge (Kshs)": "1,000"
+    },
+    {
+      "Service": "Agent Approval Fee",
+      "Charge (Kshs)": "1,000"
+    },
+    {
+      "Service": "Agent Network Approval (Access Fee)",
+      "Charge (Kshs)": "15,000"
+    },
+    {
+      "Service": "Agent Withdrawal & Deposit",
+      "Charge (Kshs)": "Agency Tariff applies"
+    }
+  ]

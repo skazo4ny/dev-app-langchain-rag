@@ -1,0 +1,111 @@
+{
+    "Credit Tariffs": [
+      {
+        "Sector": "Business Banking - SME",
+        "Service/Product": [
+          "SME Working Capital & Overdrafts",
+          "Project Financing",
+          "Mortgages (Commercial)",
+          "Mortgages (Residential)",
+          "Asset & Equipment Financing",
+          "Equity Release"
+        ],
+        "Applicable Interest": "17% - 19.5%"
+      },
+      {
+        "Sector": "Corporates & Large Enterprises",
+        "Service/Product": [
+          "Working Capital",
+          "Overdraft",
+          "CapEx Financing",
+          "Equity Release",
+          "Project Financing"
+        ],
+        "Applicable Interest": "15% - 17.5%"
+      },
+      {
+        "Sector": "Digital/Mobile Loans",
+        "Service/Product": [
+          "Eazzy Loans",
+          "Merchant Loans",
+          "Eazzy Stock Agent Loans"
+        ],
+        "Applicable Interest": "13% - 15%"
+      },
+      {
+        "Sector": "Food & Agriculture Loans",
+        "Service/Product": [
+          "Farm input",
+          "CapEx",
+          "Kilimo Working Capital Overdrafts",
+          "Commercial Agriculture Finance",
+          "Farm Asset & Equipment Financing"
+        ],
+        "Applicable Interest": "17% - 19%"
+      },
+      {
+        "Sector": "Retail Business Banking",
+        "Service/Product": [
+          "Biashara & Pamoja Banking",
+          "Micro Enterprises Working Capital",
+          "Micro Enterprises",
+          "CapEx",
+          "Group-Based Lending"
+        ],
+        "Applicable Interest": "18% - 20%"
+      },
+      {
+        "Sector": "Retail Personal Banking",
+        "Service/Product": [
+          "Salary Advance",
+          "Check offs Loans",
+          "Pensioner Loans",
+          "Secured Salary Loans"
+        ],
+        "Applicable Interest": "13% - 20.5%"
+      },
+      {
+        "Sector": "Public Sector",
+        "Service/Product": [
+          "Parastatal",
+          "Public Schools",
+          "Hospitals",
+          "SACCOS",
+          "Micro Finance Institutions",
+          "Secured Salary Loans"
+        ],
+        "Applicable Interest": "15% - 19.5%"
+      }
+    ],
+    "Other Charges": [
+      {
+        "Charge": "Temporary Overdraft Fee (TOD)",
+        "Details": "10% on the amount granted\n300/= or 3% whichever is higher"
+      },
+      {
+        "Charge": "Uncleared Effects",
+        "Details": "300/= or 3% whichever is higher" 
+      },
+      {
+        "Charge": "Group Member Passbook",
+        "Details": "Kshs. 100"
+      },
+      {
+        "Charge": "Group member registration fee (Annual)",
+        "Details": "Kshs. 500"
+      },
+      {
+        "Charge": "Loan Application & Credit Evaluation Fee (LACE) for Digital Loans and facilities with tenors below 12months",
+        "Details": "Upto 5%"
+      },
+      {
+        "Charge": "Loan Restructuring Fees",
+        "Details": "Upto 5%"
+      }
+    ],
+    "Forex Denominated Loans": [
+      {
+        "Note": "*Forex denominated facilities are priced at Reference Rate* plus a Margin subject to a floor\nUSD - S.O.F.R, GBP - S.O.N.I.A, EURO - E.S.T.R"
+      }
+    ]
+  }

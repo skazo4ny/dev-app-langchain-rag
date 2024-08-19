@@ -1,4 +1,5 @@
 import os
+import json
 from pathlib import Path
 
 from pypdf import PdfReader
@@ -69,3 +70,39 @@ if __name__ == "__main__":
     for doc in csv_docs:
         print(doc)
 
+def load_data_files(data_dir="./data"):
+    docs = []
+    paths = Path(data_dir).glob('**/*.*')  # Match all files
+    for path in paths:
+        try:
+            print(f"Loading {path}")
+            if path.suffix == '.txt':
+                loader = TextLoader(path)
+                docs.extend(loader.load())
+            elif path.suffix == '.json':
+                with open(path) as f:
+                    json_data = json.load(f)
+                if isinstance(json_data, list):  # Handle list of dictionaries
+                    for item in json_data:
+                        content = "\n".join([f"{k}: {v}" for k, v in item.items()])
+                        docs.append(Document(page_content=content, metadata={'source': str(path)}))
+                elif isinstance(json_data, dict):  # Handle nested dictionaries
+                    content = ""
+                    for key, value in json_data.items():
+                        content += f"**{key}**\n\n"
+                        if isinstance(value, list):
+                            for item in value:
+                                if isinstance(item, dict):
+                                    content += "\n".join([f"{k}: {v}" for k, v in item.items()]) + "\n\n"
+                                else:
+                                    content += str(item) + "\n\n"
+                        else:
+                            content += str(value) + "\n\n"
+                    docs.append(Document(page_content=content, metadata={'source': str(path)}))
+                else:
+                    print(f"Unsupported JSON structure in {path}")
+            else:
+                print(f"Unsupported file type: {path}")
+        except Exception as e:
+            print(f"Error loading {path}: {e}")
+    return docs

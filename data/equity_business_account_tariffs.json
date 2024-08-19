@@ -1,0 +1,79 @@
+[
+    {
+      "Account Type": "Retail",
+      "Business Account (KSHS)": "1,000",
+      "Business Current Account (KSHS)": "10,000",
+      "Institution Account (KSHS)": "Nil",
+      "Collection Account (KSHS)": "10,000"
+    },
+    {
+      "Account Type": "Account opening balance",
+      "Business Account (KSHS)": "Nil",
+      "Business Current Account (KSHS)": "N/A",
+      "Institution Account (KSHS)": "Nil",
+      "Collection Account (KSHS)": "Nil"
+    },
+    {
+      "Account Type": "Minimum operating balance",
+      "Business Account (KSHS)": "150",
+      "Business Current Account (KSHS)": "150",
+      "Institution Account (KSHS)": "Free",
+      "Collection Account (KSHS)": "150"
+    },
+    {
+      "Account Type": "Inter-branch cash withdrawal",
+      "Business Account (KSHS)": "500",
+      "Business Current Account (KSHS)": "1000",
+      "Institution Account (KSHS)": "300",
+      "Collection Account (KSHS)": "1000"
+    },
+    {
+      "Account Type": "Account closing fees",
+      "Business Account (KSHS)": "100",
+      "Business Current Account (KSHS)": "100",
+      "Institution Account (KSHS)": "Nil",
+      "Collection Account (KSHS)": "100"
+    },
+    {
+      "Account Type": "Counter cash withdrawal",
+      "Business Account (KSHS)": "5,000",
+      "Business Current Account (KSHS)": "10,000",
+      "Institution Account (KSHS)": "Nil",
+      "Collection Account (KSHS)": "10,000"
+    },
+    {
+      "Account Type": "Corporate",
+      "Business Account (KSHS)": "Nil",
+      "Business Current Account (KSHS)": "Nil",
+      "Institution Account (KSHS)": "Nil",
+      "Collection Account (KSHS)": "Nil"
+    },
+    {
+      "Account Type": "Account opening balance",
+      "Business Account (KSHS)": "150",
+      "Business Current Account (KSHS)": "150",
+      "Institution Account (KSHS)": "Nil",
+      "Collection Account (KSHS)": "150"
+    },
+    {
+      "Account Type": "Minimum operating balance",
+      "Business Account (KSHS)": "500",
+      "Business Current Account (KSHS)": "1,000",
+      "Institution Account (KSHS)": "300",
+      "Collection Account (KSHS)": "1,000"
+    },
+    {
+      "Account Type": "Inter-branch cash withdrawal",
+      "Business Account (KSHS)": "100",
+      "Business Current Account (KSHS)": "100",
+      "Institution Account (KSHS)": "Nil",
+      "Collection Account (KSHS)": "100"
+    },
+    {
+      "Account Type": "Account closing fees",
+      "Business Account (KSHS)": "300",
+      "Business Current Account (KSHS)": "300",
+      "Institution Account (KSHS)": "Nil",
+      "Collection Account (KSHS)": "300"
+    }
+  ]

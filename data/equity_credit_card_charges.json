@@ -1,0 +1,79 @@
+{
+    "VISA Credit Card": [
+      {
+        "Card Type": "Classic (Main card)",
+        "Joining fee": "2,500",
+        "Annual subscription fee": "2,500",
+        "Annual subscription fee (Supplementary)": "1,500",
+        "Credit card replacement fee": "1,000",
+        "Insurance fee": "303"
+      },
+      {
+        "Card Type": "Gold (Main card)",
+        "Joining fee": "7,500",
+        "Annual subscription fee": "4,500",
+        "Annual subscription fee (Supplementary)": "3,500",
+        "Credit card replacement fee": "1,500",
+        "Insurance fee": "963"
+      }
+    ],
+    "AMEX Credit Cards": [
+      {
+        "Card Type": "Green & Gold",
+        "Joining Fee": "Free",
+        "Insurance fee": "0.2% of limit",
+        "Annual subscription fee (Main Card)": "3,500",
+        "Annual subscription fee (Supplementary)": "2,000",
+        "Credit Card Replacement fee": "500"
+      },
+      {
+        "Card Type": "Gold (Main Card)",
+        "Annual Subscription fee": "7,000",
+        "Annual subscription fee (Supplementary)": "4,000",
+        "Credit Card Replacement fee": "1,000"
+      }
+    ],
+    "Corporate Credit Cards": [
+      {
+        "Joining Fee": "5,000",
+        "Annual Subscription Fee - Per Card": "4,000",
+        "Credit Card Replacement Fee": "1,000"
+      }
+    ],
+    "All Credit Cards": [
+      {
+        "Charge": "Cash Advance Fee On Us",
+        "Rate": "6%"
+      },
+      {
+        "Charge": "Cash Advance Fee Not On Us",
+        "Rate": "10%"
+      },
+      {
+        "Charge": "Late Payment Fee (Except Corporate Cards)",
+        "Rate": "6%"
+      },
+      {
+        "Charge": "Interest Rate",
+        "Rate": "3.5%p.m."
+      },
+      {
+        "Charge": "Overlimit fee",
+        "Rate": "4%"
+      }
+    ],
+    "Virtual Prepaid Cards": [
+      {
+        "Charge": "Card Application Fee",
+        "Rate": "300"
+      },
+      {
+        "Charge": "Loading Fee",
+        "Rate": "2%"
+      },
+      {
+        "Charge": "E-Commerce Transactions",
+        "Rate": "Free"
+      }
+    ]
+  }

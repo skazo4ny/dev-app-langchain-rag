@@ -1,0 +1,148 @@
+{
+    "EazzyBiz": [
+      {
+        "Service": "Annual Subscription Charges",
+        "Charge (Kshs)": "Free"
+      },
+      {
+        "Service": "View account balances",
+        "Charge (Kshs)": "Free"
+      },
+      {
+        "Service": "View transactions summary and download statements",
+        "Charge (Kshs)": "Free"
+      },
+      {
+        "Service": "Service request Charges e.g Cheque Book. Cost of requested item applies",
+        "Charge (Kshs)": "30"
+      },
+      {
+        "Service": "Report access & downloads",
+        "Charge (Kshs)": "Free"
+      },
+      {
+        "Service": "Host 2 Host Service Installation",
+        "Charge (Kshs)": "Free"
+      },
+      {
+        "Service": "Within Bank Transfers",
+        "Charge (Kshs)": "50"
+      },
+      {
+        "Service": "Salary Remittance",
+        "Charge (Kshs)": "100"
+      },
+      {
+        "Service": "EFT Outward",
+        "Charge (Kshs)": "200"
+      },
+      {
+        "Service": "Transfer to Other Banks (RTGS)",
+        "Charge (Kshs)": "500"
+      },
+      {
+        "Service": "International Transfers (SWIFT)",
+        "Charge (Kshs)": "1,500"
+      },
+      {
+        "Service": "Bill & Statutory Payments",
+        "Charge (Kshs)": "30"
+      },
+      {
+        "Service": "Token access",
+        "Charge (Kshs)": "First 2 tokens are Free"
+      },
+      {
+        "Service": "Additional token",
+        "Charge (Kshs)": "3,500"
+      },
+      {
+        "Service": "Payments to Equitel",
+        "Charge (Kshs)": "Free"
+      },
+      {
+        "Service": "Payments to Mobile wallets",
+        "Charge (Kshs)": "As Per Mobile Wallet Tariff"
+      }
+    ],
+    "Retail Web": [
+      {
+        "Service": "Airtime Purchase",
+        "Charge (Kshs)": "Free"
+      },
+      {
+        "Service": "Bill Payments",
+        "Charge (Kshs)": "30"
+      },
+      {
+        "Service": "Buy Goods\n(One Equity Till Number/ Pay with Equity)",
+        "Charge (Kshs)": "Free"
+      },
+      {
+        "Service": "Buy / Sell Stocks",
+        "Charge (Kshs)": "Free"
+      },
+      {
+        "Service": "EFT",
+        "Charge (Kshs)": "200"
+      },
+      {
+        "Service": "Send Money to Mobile wallet",
+        "Charge (Kshs)": "As Per Mobile Wallet Tariff"
+      },
+      {
+        "Service": "Send Money via (Pesalink)",
+        "Charge (Kshs)": "As per Pesalink Tariff"
+      },
+      {
+        "Service": "Send Money via (RTGS)",
+        "Charge (Kshs)": "500"
+      },
+      {
+        "Service": "Statement download",
+        "Charge (Kshs)": "Free"
+      },
+      {
+        "Service": "SWIFT",
+        "Charge (Kshs)": "1,500"
+      },
+      {
+        "Service": "Transfer within Equity",
+        "Charge (Kshs)": "50"
+      }
+    ],
+    "Mobile Banking": [
+      {
+        "Service": "Send Money within Equity",
+        "Charge (Kshs)": "0"
+      },
+      {
+        "Service": "Send Money via (RTGS)",
+        "Charge (Kshs)": "500"
+      },
+      {
+        "Service": "Send Money via (Pesalink)",
+        "Charge (Kshs)": "As per Pesalink Tariff"
+      },
+      {
+        "Service": "Send Money Cross Boarder (Swift)",
+        "Charge (Kshs)": "1,500"
+      },
+      {
+        "Service": "Send Money to Mobile wallet",
+        "Charge (Kshs)": "As Per Mobile Wallet Tariff"
+      },
+      {
+        "Service": "Bill Payments",
+        "Charge (Kshs)": "30"
+      },
+      {
+        "Service": "View Statement",
+        "Charge (Kshs)": "Free"
+      },
+      {
+        "Service": "Buy Airtime",
+        "Charge (Kshs)": "Free"
+      }
+    ]
+  }

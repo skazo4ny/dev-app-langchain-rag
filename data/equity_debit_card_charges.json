@@ -1,0 +1,108 @@
+{
+    "Scheme Debit Cards": [
+      {
+        "Card Type": "Card Application",
+        "Charge (KSHS)": "600"
+      },
+      {
+        "Card Type": "Card Annual Fee",
+        "Charge (KSHS)": "200"
+      },
+      {
+        "Card Type": "Card replacement",
+        "Charge (KSHS)": "600"
+      },
+      {
+        "Card Type": "Card re-issue due to PIN forgotten",
+        "Charge (KSHS)": "600"
+      }
+    ],
+    "Proprietary Debit": [
+      {
+        "Card Type": "Card Application fee",
+        "Charge (KSHS)": "400"
+      },
+      {
+        "Card Type": "Card Annual Fee",
+        "Charge (KSHS)": "100"
+      },
+      {
+        "Card Type": "Card Replacement",
+        "Charge (KSHS)": "400"
+      }
+    ],
+    "Prepaid Cards": [
+      {
+        "Card Type": "Card Application Fee",
+        "Charge (KSHS)": "500"
+      },
+      {
+        "Card Type": "Application Fee (Students)",
+        "Charge (KSHS)": "350"
+      },
+      {
+        "Card Type": "Card Replacement Fee",
+        "Charge (KSHS)": "300"
+      }
+    ],
+    "Debit & Prepaid Cards Transaction Charges": [
+      {
+        "Transaction Type": "ATM Withdrawal at Equity",
+        "Charge (KSHS)": "30"
+      },
+      {
+        "Transaction Type": "Cash withdrawal (Other Banks' ATM)",
+        "Charge (KSHS)": "200"
+      },
+      {
+        "Transaction Type": "Agent Withdrawal",
+        "Charge (KSHS)": "Agent tariff applies"
+      },
+      {
+        "Transaction Type": "POS Purchase",
+        "Charge (KSHS)": "Free"
+      },
+      {
+        "Transaction Type": "ATM Mini-statement - Display",
+        "Charge (KSHS)": "Free"
+      },
+      {
+        "Transaction Type": "ATM Balance Enquiry - Display",
+        "Charge (KSHS)": "Free"
+      },
+      {
+        "Transaction Type": "Declined Cash Transaction (Other Banks' ATMs)",
+        "Charge (KSHS)": "30"
+      },
+      {
+        "Transaction Type": "Card Balance Enquiry (Other Banks' ATMs)",
+        "Charge (KSHS)": "30"
+      },
+      {
+        "Transaction Type": "Cash Back withdrawal",
+        "Charge (KSHS)": "25"
+      },
+      {
+        "Transaction Type": "Bills Payment",
+        "Charge (KSHS)": "30"
+      }
+    ],
+    "VISA USD Debit Card": [
+      {
+        "Card Type": "Card application fee",
+        "Charge (USD)": "8"
+      },
+      {
+        "Card Type": "Card annual Fee",
+        "Charge (USD)": "3"
+      },
+      {
+        "Card Type": "Card replacement",
+        "Charge (USD)": "8"
+      },
+      {
+        "Card Type": "ATM Withdrawal fee (Both Equity and Non Equity)",
+        "Charge (USD)": "3"
+      }
+    ]
+  }

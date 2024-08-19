@@ -1,0 +1,66 @@
+{
+    "Receive Money From": [
+      {
+        "Mobile Money Provider": "Airtel Money",
+        "Charge (Kshs)": "Free",
+        "Note": "(any amount)"
+      },
+      {
+        "Mobile Money Provider": "M-Pesa",
+        "Charge (Kshs)": "Free",
+        "Note": "(any amount)"
+      }
+    ],
+    "Send Money": [
+      {
+        "Transaction Amount (Kshs)": "1 - 100",
+        "TO MPESA": "0",
+        "TO AIRTEL MONEY": "0"
+      },
+      {
+        "Transaction Amount (Kshs)": "101 - 500",
+        "TO MPESA": "10",
+        "TO AIRTEL MONEY": "9"
+      },
+      {
+        "Transaction Amount (Kshs)": "501 - 1,000",
+        "TO MPESA": "12",
+        "TO AIRTEL MONEY": "11"
+      },
+      {
+        "Transaction Amount (Kshs)": "1,001 - 1,500",
+        "TO MPESA": "14",
+        "TO AIRTEL MONEY": "13"
+      },
+      {
+        "Transaction Amount (Kshs)": "1,501 - 2,500",
+        "TO MPESA": "23",
+        "TO AIRTEL MONEY": "21"
+      },
+      {
+        "Transaction Amount (Kshs)": "2,501 - 3,500",
+        "TO MPESA": "33",
+        "TO AIRTEL MONEY": "31"
+      },
+      {
+        "Transaction Amount (Kshs)": "3,501 - 5,000",
+        "TO MPESA": "43",
+        "TO AIRTEL MONEY": "41"
+      },
+      {
+        "Transaction Amount (Kshs)": "5,001 - 7,500",
+        "TO MPESA": "55",
+        "TO AIRTEL MONEY": "53"
+      },
+      {
+        "Transaction Amount (Kshs)": "7,501 - 20,000",
+        "TO MPESA": "65",
+        "TO AIRTEL MONEY": "63"
+      },
+      {
+        "Transaction Amount (Kshs)": "20,001 - 150,000",
+        "TO MPESA": "67",
+        "TO AIRTEL MONEY": "64"
+      }
+    ]
+  }

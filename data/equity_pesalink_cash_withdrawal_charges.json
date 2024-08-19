@@ -1,0 +1,14 @@
+[
+    {
+      "Transaction Amount (Kshs)": "0 - 1,000",
+      "Cash Withdrawal (incl. of 20% excise duty)": "0"
+    },
+    {
+      "Transaction Amount (Kshs)": "1,000 - 99,999",
+      "Cash Withdrawal (incl. of 20% excise duty)": "60"
+    },
+    {
+      "Transaction Amount (Kshs)": "100,000 - 999,999",
+      "Cash Withdrawal (incl. of 20% excise duty)": "120"
+    }
+  ]

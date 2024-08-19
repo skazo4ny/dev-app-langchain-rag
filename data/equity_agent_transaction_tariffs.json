@@ -1,0 +1,37 @@
+[
+    {
+      "Transaction Amount": "2,500 and Below",
+      "Cash Withdrawal (incl. of 20% excise duty)": "30",
+      "Cash Deposit": "0"
+    },
+    {
+      "Transaction Amount": "2,501 - 5,000",
+      "Cash Withdrawal (incl. of 20% excise duty)": "54",
+      "Cash Deposit": "0"
+    },
+    {
+      "Transaction Amount": "5,001 - 10,000",
+      "Cash Withdrawal (incl. of 20% excise duty)": "90",
+      "Cash Deposit": "0"
+    },
+    {
+      "Transaction Amount": "10,001 - 20,000",
+      "Cash Withdrawal (incl. of 20% excise duty)": "174",
+      "Cash Deposit": "0"
+    },
+    {
+      "Transaction Amount": "20,001 - 35,000",
+      "Cash Withdrawal (incl. of 20% excise duty)": "204",
+      "Cash Deposit": "0"
+    },
+    {
+      "Transaction Amount": "35,001 - 50,000",
+      "Cash Withdrawal (incl. of 20% excise duty)": "234",
+      "Cash Deposit": "0"
+    },
+    {
+      "Transaction Amount": "50,001 - 100,000",
+      "Cash Withdrawal (incl. of 20% excise duty)": "270",
+      "Cash Deposit": "0"
+    }
+  ]

@@ -1,0 +1,194 @@
+[
+    {
+      "Account Services": "Ad hoc Statement Fees (per page)",
+      "Charges in KShs": "150"
+    },
+    {
+      "Account Services": "Bank Opinion / Introduction / Credit Reference",
+      "Charges in KShs": "2,000"
+    },
+    {
+      "Account Services": "Dormant Account reactivation Fees",
+      "Charges in KShs": "200"
+    },
+    {
+      "Account Services": "Interest Certificate (Free for Churches)",
+      "Charges in KShs": "500"
+    },
+    {
+      "Account Services": "Ledger Fees",
+      "Charges in KShs": "Nil"
+    },
+    {
+      "Account Services": "Photocopy per page",
+      "Charges in KShs": "20"
+    },
+    {
+      "Account Services": "Postage/Registered Mail",
+      "Charges in KShs": "As per courier charges"
+    },
+    {
+      "Account Services": "Retrieval of Documents (more than 1 month old)",
+      "Charges in KShs": "500"
+    },
+    {
+      "Account Services": "Search Fees",
+      "Charges in KShs": "500"
+    },
+    {
+      "Account Services": "SMS Alert fee (Per transaction, where applicable)",
+      "Charges in KShs": "2"
+    },
+    {
+      "Account Services": "Bulk coins over Kshs 10,000",
+      "Charges in KShs": "0"
+    },
+    {
+      "Account Services": "Bulk notes over Kshs 500,000",
+      "Charges in KShs": "0"
+    },
+    {
+      "Account Services": "Collection account charges per transaction",
+      "Charges in KShs": "50"
+    },
+    {
+      "Account Services": "SWIFT Remittance (MT103) - Incoming",
+      "Charges in KShs": "600 or Equivalent in Forex"
+    },
+    {
+      "Account Services": "SWIFT Remittance (MT103) - Outgoing",
+      "Charges in KShs": "1,500 or Equivalent in Forex"
+    },
+    {
+      "Account Services": "EAPS Remittance (MT103) - Incoming",
+      "Charges in KShs": "Free"
+    },
+    {
+      "Account Services": "EAPS Remittance (MT103) - Outgoing",
+      "Charges in KShs": "500"
+    },
+    {
+      "Account Services": "RTGS Remittance (MT103) - Incoming",
+      "Charges in KShs": "Free"
+    },
+    {
+      "Account Services": "RTGS Remittance (MT103) - Outgoing",
+      "Charges in KShs": "500"
+    },
+    {
+      "Account Services": "Standing instructions placement",
+      "Charges in KShs": "Free"
+    },
+    {
+      "Account Services": "Bankers Cheques - Customers",
+      "Charges in KShs": "100"
+    },
+    {
+      "Account Services": "Issuance of Foreign Currency Drafts (Drawn outside Kenya)",
+      "Charges in KShs": "600"
+    },
+    {
+      "Account Services": "Cheque Book Per leaf (Incl. KShs. 2.5 stamp duty)",
+      "Charges in KShs": "17.5"
+    },
+    {
+      "Account Services": "Counter Cheque (Retail)",
+      "Charges in KShs": "300"
+    },
+    {
+      "Account Services": "Counter Cheque (Supreme)",
+      "Charges in KShs": "500"
+    },
+    {
+      "Account Services": "Dividend Cheque Clearing Charges",
+      "Charges in KShs": "Nil"
+    },
+    {
+      "Account Services": "Inhouse Unpaid Cheque (Refer to Drawer)-Issuer",
+      "Charges in KShs": "2,500"
+    },
+    {
+      "Account Services": "Inhouse Unpaid Cheque (Refer to Drawer)-Payee",
+      "Charges in KShs": "2,000"
+    },
+    {
+      "Account Services": "Inhouse Unpaid Cheque (Technical)",
+      "Charges in KShs": "2,000"
+    },
+    {
+      "Account Services": "Inward Clearing Charge",
+      "Charges in KShs": "50"
+    },
+    {
+      "Account Services": "Inward Unpaid Cheque (Refer to Drawer)",
+      "Charges in KShs": "2,500"
+    },
+    {
+      "Account Services": "Inward Unpaid Cheque (Technical)",
+      "Charges in KShs": "2,000"
+    },
+    {
+      "Account Services": "Outward Clearing Charge",
+      "Charges in KShs": "Nil"
+    },
+    {
+      "Account Services": "Outward Unpaid Cheque (Refer to Drawer)",
+      "Charges in KShs": "2,000"
+    },
+    {
+      "Account Services": "Outward Unpaid Cheque (Technical)",
+      "Charges in KShs": "2,000"
+    },
+    {
+      "Account Services": "Payment Voucher Stop Payment Instructions",
+      "Charges in KShs": "1,500"
+    },
+    {
+      "Account Services": "Stop Cheque Instructions",
+      "Charges in KShs": "1,000"
+    },
+    {
+      "Account Services": "Bills Payable Printing for Per Cheque",
+      "Charges in KShs": "100"
+    },
+    {
+      "Account Services": "Direct Debit failure charge",
+      "Charges in KShs": "300"
+    },
+    {
+      "Account Services": "Funds Transfer/EFTs - Internal",
+      "Charges in KShs": "100"
+    },
+    {
+      "Account Services": "Local Money Transfer EFT to Non-Customers",
+      "Charges in KShs": "300"
+    },
+    {
+      "Account Services": "PAYE Remittances",
+      "Charges in KShs": "300"
+    },
+    {
+      "Account Services": "Remittances - Tea, Salaries, Coffee, Milk",
+      "Charges in KShs": "100"
+    },
+    {
+      "Account Services": "Standing Orders - Internal",
+      "Charges in KShs": "Free"
+    },
+    {
+      "Account Services": "Standing Orders/EFTs - External",
+      "Charges in KShs": "300"
+    },
+    {
+      "Account Services": "Standing Orders/EFTs - Failed",
+      "Charges in KShs": "500"
+    },
+    {
+      "Account Services": "Certification of Balances for Audit Purposes",
+      "Charges in KShs": "1,000"
+    },
+    {
+      "Account Services": "KPLC Payments Commission",
+      "Charges in KShs": "25"
+    }
+  ]

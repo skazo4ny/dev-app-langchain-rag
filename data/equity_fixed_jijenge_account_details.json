@@ -1,0 +1,38 @@
+[
+    {
+      "Account Type": "Fixed Account min bal",
+      "Charge (KSHS)": "50,000"
+    },
+    {
+      "Account Type": "Fixed Account min bal - Corporate",
+      "Charge (KSHS)": "50,000"
+    },
+    {
+      "Account Type": "Fixed Deposit - Foreign currency",
+      "Charge": "USD 5,000 (equivalent for Other currencies)"
+    },
+    {
+      "Account Type": "Jijenge account min bal - all Branches",
+      "Charge (KSHS)": "300"
+    },
+    {
+      "Account Type": "Jijenge minimum monthly contribution",
+      "Charge (KSHS)": "300"
+    },
+    {
+      "Account Type": "Jijenge premature withdrawal",
+      "Charge": "5% of the savings (minimum Kes 200 maximum Kes 5,000)"
+    },
+    {
+      "Account Type": "Fixed deposit withdrawal",
+      "Charge (KSHS)": "Nil"
+    },
+    {
+      "Account Type": "Jijenge Account withdrawal",
+      "Charge (KSHS)": "Nil"
+    },
+    {
+      "Account Type": "Fixed deposit premature withdrawal",
+      "Charge": "call rate applies"
+    }
+  ]

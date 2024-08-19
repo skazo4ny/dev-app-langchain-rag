@@ -1,0 +1,195 @@
+{
+    "Trade Finance": {
+      "Import Letters Of Credit": [
+        {
+          "Charge Item": "Opening Commission",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "1% per quarter or part thereof minimum 2,000"
+        },
+        {
+          "Charge Item": "Amendment",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "2,000 plus swift charges"
+        },
+        {
+          "Charge Item": "Extension of the LC validity",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "1% per quarter or part thereof minimum 2,000"
+        },
+        {
+          "Charge Item": "Increase in amount of credit",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "1% per quarter or part thereof minimum 2,000"
+        },
+        {
+          "Charge Item": "Retirement commission",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "0.25% minimum 2,000 max 10,000"
+        },
+        {
+          "Charge Item": "Acceptance commission",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "1% per quarter or part thereof minimum 2,000"
+        },
+        {
+          "Charge Item": "Post import Finance Commission",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "0.5% per quarter or part thereof plus applicable interest"
+        },
+        {
+          "Charge Item": "Extension of maturity of Bill - LC",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "1% per quarter or part thereof"
+        },
+        {
+          "Charge Item": "Postage for LCs",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "Actual courier charges plus 50"
+        },
+        {
+          "Charge Item": "Document Handling",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "500"
+        },
+        {
+          "Charge Item": "LC discharged unutilised",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "2,000"
+        },
+        {
+          "Charge Item": "Swift Charges",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "1,500 for short message and 3,000 for long message"
+        }
+      ],
+      "Export Letters Of Credit": [
+        {
+          "Charge Item": "Advising Commission",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "2,000"
+        },
+        {
+          "Charge Item": "Confirmation commission",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "0.5% per quarter or part thereof minimum 2,000"
+        },
+        {
+          "Charge Item": "Amendment",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "2,000"
+        },
+        {
+          "Charge Item": "Extension Commission - Confirmed LC",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "0.5% per quarter or part thereof minimum 2,000"
+        },
+        {
+          "Charge Item": "Extension Commission - Unconfirmed LC",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "2,000"
+        },
+        {
+          "Charge Item": "Increase of Amount - Confirmed LC",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "0.5% per quarter or part thereof minimum 2,000"
+        },
+        {
+          "Charge Item": "Courier charges",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "Actual courier charges min.4,000"
+        },
+        {
+          "Charge Item": "Acceptance commission - Confirmed LC",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "0.5% per quarter or part thereof minimum 2,000"
+        },
+        {
+          "Charge Item": "Acceptance commission - Unconfirmed LC",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "0.25% per quarter or part thereof minimum 2,000"
+        },
+        {
+          "Charge Item": "Retirement commission",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "0.25% minimum 2,000 max 10,000"
+        }
+      ],
+      "Discounting of Bills": {
+        "Charge in Kshs. (Exclusive of Excise Duty)": "1% per quarter or part thereof minimum 2,000 plus applicable interest"
+      },
+      "Import documentary Collections": [
+        {
+          "Charge Item": "Document Handling",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "500"
+        },
+        {
+          "Charge Item": "Ammendment",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "2,000"
+        },
+        {
+          "Charge Item": "Retirement commission",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "0.25% minimum 2,000 max 10,000"
+        },
+        {
+          "Charge Item": "Avalising of Bills",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "1% per quarter or part thereof minimum 2,000"
+        },
+        {
+          "Charge Item": "Swift Charges",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "1,500"
+        }
+      ],
+      "Export Documentary Collection": [
+        {
+          "Charge Item": "Document Processing",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "2,000"
+        },
+        {
+          "Charge Item": "Courier charges",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "Actual courier charges min. 4,000"
+        },
+        {
+          "Charge Item": "Retirement commission",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "0.25% minimum 2,000 max 10,000"
+        },
+        {
+          "Charge Item": "Discounting Commission",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "1% per quarter or part thereof minimum 2,000 plus applicable interest"
+        },
+        {
+          "Charge Item": "Swift Charges",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "1,500"
+        }
+      ],
+      "Guarantees": [
+        {
+          "Charge Item": "Bank guarantees",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "3% per annum min 5,000"
+        },
+        {
+          "Charge Item": "Bid bonds",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "1% per annum min 5,000"
+        },
+        {
+          "Charge Item": "Perfomance bonds",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "3% per annum min 5,000"
+        },
+        {
+          "Charge Item": "Extension (bid bond) beyond one year",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "1% per annum min 5,000"
+        },
+        {
+          "Charge Item": "Extension (other guarantees) beyond one year",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "3% per annum min 5,000"
+        },
+        {
+          "Charge Item": "Amendment (all Guarantees)",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "Kshs.1,000"
+        },
+        {
+          "Charge Item": "Custom Bonds",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "3% per annum min 5,000"
+        },
+        {
+          "Charge Item": "Cancellation guarantee if not returned",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "Free"
+        },
+        {
+          "Charge Item": "Cancellation of returned guarantees",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "Free"
+        },
+        {
+          "Charge Item": "Swift Charges",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "1,500 for short message and 3,000 for long message"
+        }
+      ],
+      "Structured Finance": [
+        {
+          "Charge Item": "Deal Structuring Fees",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "0.5% of deal amount"
+        },
+        {
+          "Charge Item": "Collateral Management fees",
+          "Charge in Kshs. (Exclusive of Excise Duty)": "As per Collateral Management"
+        }
+      ]
+    }
+  }
