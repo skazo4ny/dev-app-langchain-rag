@@ -5,7 +5,7 @@ from pathlib import Path
 from pypdf import PdfReader
 from langchain.docstore.document import Document
 from langchain_community.document_loaders import TextLoader, CSVLoader, PyPDFLoader
-from langchain_community.document_loaders.excel import ExcelLoader
+from langchain_community.document_loaders.excel import UnstructuredExcelLoader
 
 def load_data_files(data_dir):
     """
@@ -28,7 +28,7 @@ def load_data_files(data_dir):
             elif filepath.suffix == '.pdf':
                 loader = PyPDFLoader(str(filepath))
             elif filepath.suffix == '.xls' or filepath.suffix == '.xlsx':
-                loader = ExcelLoader(str(filepath))
+                loader = UnstructuredExcelLoader(str(filepath)) 
             elif filepath.suffix == '.json':
                 with open(filepath) as f:
                     json_data = json.load(f)
