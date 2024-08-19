@@ -76,7 +76,7 @@ def main():
         ]
     )
 
-    text_path = "examples/grocery.md"
+    text_path = "examples/equity_faq.txt"  # Updated path
     text = open(text_path, "r").read()
     retriever = SimpleTextRetriever.from_texts([text])
     rag_chain = make_rag_chain(model, retriever, rag_prompt=None)
