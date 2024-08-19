@@ -13,9 +13,11 @@ MISTRAL_ID = "mistralai/Mistral-7B-Instruct-v0.1"
 ZEPHYR_ID = "HuggingFaceH4/zephyr-7b-beta"
 
 
-def get_model(repo_id=ZEPHYR_ID, **kwargs):
+def get_model(repo_id="ChatGPT", **kwargs):
     if repo_id == "ChatGPT":
-        chat_model = ChatOpenAI(temperature=0, **kwargs)
+        # Get model name from kwargs, default to 'gpt-4o-mini'
+        model_name = kwargs.get("model_name", "gpt-4o-mini") 
+        chat_model = ChatOpenAI(temperature=0, model=model_name, **kwargs)  # Pass model 
     else:
         huggingfacehub_api_token = kwargs.get("HUGGINGFACEHUB_API_TOKEN", None)
         if not huggingfacehub_api_token:
