@@ -57,7 +57,7 @@ def get_retriever(openai_api_key=None):
         An ensemble document retriever.
     """
     try:
-        docs = load_data_files()
+        docs = load_data_files(data_dir="data")  # Add data_dir here 
         embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key, model="text-embedding-3-small")
         return ensemble_retriever_from_docs(docs, embeddings=embeddings)
     except Exception as e:
