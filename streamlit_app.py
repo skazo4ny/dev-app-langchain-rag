@@ -3,6 +3,12 @@ import streamlit as st
 import logging
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain_community.embeddings import OpenAIEmbeddings
+
+# Override sqlite3 before importing langchain_chroma
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3') 
+
 from langchain_chroma import Chroma # Import Chroma from langchain_chroma
 
 from ensemble import ensemble_retriever_from_docs
