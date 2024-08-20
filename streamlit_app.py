@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import logging
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
