@@ -3,7 +3,7 @@ import streamlit as st
 import logging
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain_community.embeddings import OpenAIEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma # Import Chroma from langchain_chroma
 
 from ensemble import ensemble_retriever_from_docs
 from full_chain import create_full_chain, ask_question
@@ -141,14 +141,14 @@ def process_uploaded_file(uploaded_file, openai_api_key=None):
             embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key, model="text-embedding-3-small")
             proxy_embeddings = EmbeddingProxy(embeddings)  
 
-            # Get or create the Chroma collection
-            client = Chroma(persist_directory=os.path.join("store", "chroma")) 
-            collection = client.get_or_create_collection(
-                name="chroma", 
-                embedding_function=proxy_embeddings 
-            )
+            # Get the persistent Chroma client 
+            persist_directory = os.path.join("store", "chroma")
+            client = Chroma(persist_directory=persist_directory, embedding_function=proxy_embeddings)
 
-            # Generate unique IDs for the documents (example using UUIDs)
+            # Get or create the collection
+            collection = client.get_or_create_collection(name="chroma") 
+
+            # Generate unique IDs for the documents (using UUIDs)
             import uuid
             for doc in docs:
                 doc.metadata['id'] = str(uuid.uuid4())
