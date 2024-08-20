@@ -141,18 +141,20 @@ def process_uploaded_file(uploaded_file, openai_api_key=None):
             embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key, model="text-embedding-3-small")
             proxy_embeddings = EmbeddingProxy(embeddings)  
 
-            # Access your persistent Chroma collection
-            db = Chroma(collection_name="chroma", 
-                        embedding_function=proxy_embeddings, 
-                        persist_directory=os.path.join("store", "chroma")) 
+            # Get or create the Chroma collection
+            client = Chroma(persist_directory=os.path.join("store", "chroma")) 
+            collection = client.get_or_create_collection(
+                name="chroma", 
+                embedding_function=proxy_embeddings 
+            )
 
             # Generate unique IDs for the documents (example using UUIDs)
             import uuid
             for doc in docs:
                 doc.metadata['id'] = str(uuid.uuid4())
 
-            # Update the Chroma database (add or update documents)
-            db.update(
+            # Add the new documents to the collection
+            collection.add(
                 ids=[doc.metadata['id'] for doc in docs],
                 embeddings=[proxy_embeddings.embed_query(doc.page_content) for doc in docs],
                 documents=[doc.page_content for doc in docs],
@@ -163,7 +165,7 @@ def process_uploaded_file(uploaded_file, openai_api_key=None):
     except Exception as e:
         logging.error(f"Error processing uploaded file: {e}")
         st.error("Error processing the file. Please check the logs.")
-        
+
 def run():
     """
     Main function to run the Streamlit application.
