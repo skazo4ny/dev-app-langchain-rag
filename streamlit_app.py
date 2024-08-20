@@ -2,16 +2,18 @@ import streamlit as st
 import logging
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_community.vectorstores import Chroma
 
 from ensemble import ensemble_retriever_from_docs
 from full_chain import create_full_chain, ask_question
-from local_loader import load_data_files  # Corrected import
+from local_loader import load_data_files 
+from vector_store import EmbeddingProxy 
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-st.set_page_config(page_title="LangChain & Streamlit RAG")
-st.title("LangChain & Streamlit RAG")
+st.set_page_config(page_title="Rx Example RAG")
+st.title("Rx Example RAG")
 
 def show_ui(qa, prompt_to_user="How may I help you?"):
     """
@@ -57,13 +59,14 @@ def get_retriever(openai_api_key=None):
         An ensemble document retriever.
     """
     try:
-        docs = load_data_files(data_dir="data")  # Add data_dir here 
+        docs = load_data_files(data_dir="data")  
         embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key, model="text-embedding-3-small")
         return ensemble_retriever_from_docs(docs, embeddings=embeddings)
     except Exception as e:
         logging.error(f"Error creating retriever: {e}")
         st.error("Error initializing the application. Please check the logs.")
         st.stop()  # Stop execution if retriever creation fails
+
 
 def get_chain(openai_api_key=None, huggingfacehub_api_token=None):
     """
@@ -113,6 +116,40 @@ def get_secret_or_input(secret_key, secret_name, info_link=None):
             st.markdown(f"[Get an {secret_name}]({info_link})")
     return secret_value
 
+def process_uploaded_file(uploaded_file, openai_api_key=None):
+    """
+    Processes the uploaded file and adds it to the vector database.
+
+    Args:
+        uploaded_file: The uploaded file object from Streamlit.
+        openai_api_key: The OpenAI API key for embedding generation.
+    """
+    try:
+        if uploaded_file is not None:
+            # Get the file path from the uploaded file object
+            file_path = os.path.join("data", uploaded_file.name) 
+
+            # Save the uploaded file to the 'data' directory
+            with open(file_path, "wb") as f:
+                f.write(uploaded_file.getbuffer())
+
+            # Load the document using the saved file path
+            docs = load_data_files(data_dir=os.path.dirname(file_path))
+
+            # Use the same embedding model as in vector_store.py
+            embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key, model="text-embedding-3-small")
+            proxy_embeddings = EmbeddingProxy(embeddings)  
+
+            # Access your persistent Chroma collection
+            db = Chroma(collection_name="chroma", 
+                        embedding_function=proxy_embeddings, 
+                        persist_directory=os.path.join("store", "chroma")) 
+            db.add_documents(docs)
+            st.success("File uploaded and added to the knowledge base!")
+    except Exception as e:
+        logging.error(f"Error processing uploaded file: {e}")
+        st.error("Error processing the file. Please check the logs.")
+
 def run():
     """
     Main function to run the Streamlit application.
@@ -148,8 +185,19 @@ def run():
                 openai_api_key=openai_api_key,
                 huggingfacehub_api_token=huggingfacehub_api_token
             )
+
+            # File Uploader
+            st.subheader("Upload a Document to the Knowledge Base:")
+            uploaded_file = st.file_uploader(
+                "Choose a file", 
+                type=["txt", "pdf", "csv", "xls", "xlsx", "json"]
+            )
+            process_uploaded_file(uploaded_file, openai_api_key)
+
+            # Chat Interface
             st.subheader("Ask questions about Equity Bank's products and services:")
             show_ui(chain, "How can I assist you today?")
+
         except Exception as e:
             logging.error(f"Error initializing application: {e}")
             st.error("Error initializing the application. Please check the logs.")
