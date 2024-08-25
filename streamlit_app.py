@@ -8,8 +8,9 @@ from pathlib import Path
 from streamlit.runtime.scriptrunner.script_run_context import get_script_run_ctx
 
 # Langchain tracing
+# streamlit_app.py
+from langsmith import initialize_tracing  # Corrected import
 from langchain.callbacks import StreamlitCallbackHandler
-from langchain.smith import initialize_tracing
 
 from ensemble import ensemble_retriever_from_docs
 from full_chain import create_full_chain, ask_question
