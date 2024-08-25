@@ -4,6 +4,7 @@ import logging
 from langchain_community.retrievers import BM25Retriever, TavilySearchAPIRetriever
 from langchain.retrievers import EnsembleRetriever
 from langchain_core.output_parsers import StrOutputParser
+from langchain.embeddings import OpenAIEmbeddings
 
 from basic_chain import get_model
 from rag_chain import make_rag_chain
@@ -50,7 +51,8 @@ def main():
     # Use load_online_pdf to load the PDF directly
     docs = load_online_pdf(equity_bank_annual_report_2022)  
     
-    ensemble_retriever = ensemble_retriever_from_docs(docs)
+    embeddings = OpenAIEmbeddings(openai_api_key=os.getenv('OPENAI_API_KEY'), model="text-embedding-3-small")
+    ensemble_retriever = ensemble_retriever_from_docs(docs, embeddings)
     model = get_model("ChatGPT")
     chain = make_rag_chain(model, ensemble_retriever) | StrOutputParser()
 

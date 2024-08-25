@@ -3,7 +3,7 @@ import logging
 
 from langchain.retrievers.document_compressors import DocumentCompressorPipeline
 from langchain_community.document_transformers import EmbeddingsRedundantFilter, LongContextReorder
-from langchain_community.embeddings import OpenAIEmbeddings 
+from langchain.embeddings import OpenAIEmbeddings
 from langchain.retrievers import EnsembleRetriever, ContextualCompressionRetriever, MergerRetriever
 from langchain.chains import RetrievalQA
 

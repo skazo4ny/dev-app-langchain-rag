@@ -1,81 +1,29 @@
 import os
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import streamlit as st
 import logging
-import asyncio
-from chromadb.api.models.Collection import Collection
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
-from langchain_community.embeddings import OpenAIEmbeddings
-from langchain_community.retrievers import BM25Retriever
-from pathlib import Path
+from langchain.embeddings import OpenAIEmbeddings
 from streamlit.runtime.scriptrunner.script_run_context import get_script_run_ctx
-from chromadb import PersistentClient
-
-# Langchain tracing
-from langsmith.run_helpers import traceable
-from langchain_community.callbacks.streamlit import StreamlitCallbackHandler
+import openai
+from langchain.llms import OpenAI
+from langchain_community.llms import HuggingFaceHub
+from langsmith import Client
 
 from ensemble import ensemble_retriever_from_docs
 from full_chain import create_full_chain, ask_question
-from local_loader import load_data_files, load_file
-from vector_store import EmbeddingProxy 
+from local_loader import load_data_files
 from memory import clean_session_history
-
-os.environ["USER_AGENT"] = "Rx Example RAG Streamlit App"
-
-st.set_page_config(page_title="Rx Example RAG")
-st.title("Rx Example RAG")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Load environment variables
-from dotenv import load_dotenv
-load_dotenv()
-
-# Initialize OpenAI API key
-openai_api_key = os.getenv("OPENAI_API_KEY")
-if not openai_api_key:
-    st.error("OpenAI API key not found. Please set it in your .env file.")
-    st.stop()
-
-@st.cache_resource
-def get_retriever(openai_api_key=None):
-    """
-    Creates and caches the document retriever.
-
-    Args:
-        openai_api_key: The OpenAI API key.
-
-    Returns:
-        An ensemble document retriever.
-    """
-    try:
-        docs = load_data_files(data_dir="data")  
-        embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key, model="text-embedding-3-small") 
-        return ensemble_retriever_from_docs(docs, embeddings=embeddings)
-    except Exception as e:
-        logging.error(f"Error creating retriever: {e}")
-        logging.exception("Exception details:")
-        st.error("Error initializing the application. Please check the logs.")
-        st.stop() 
+st.set_page_config(page_title="Rx Example RAG")
+st.title("Rx Example RAG")
 
 def show_ui(qa, prompt_to_user="How may I help you?"):
-    """
-    Displays the Streamlit chat UI and handles user interactions.
-
-    Args:
-        qa: The LangChain chain for question answering.
-        prompt_to_user: The initial prompt to display to the user.
-    """
     logging.info(f"show_ui running: {prompt_to_user}")
     if "messages" not in st.session_state.keys():
         st.session_state.messages = [{"role": "assistant", "content": prompt_to_user}]
-
-    # Add LangSmith tracing callback
-    st_callback = StreamlitCallbackHandler(st.container())
 
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
@@ -90,229 +38,114 @@ def show_ui(qa, prompt_to_user="How may I help you?"):
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 try:
+                    if qa is None:
+                        raise ValueError("Chain is not initialized")
                     session_id = get_script_run_ctx().session_id
-                    if 'chain' in st.session_state:
-                        response = ask_question(st.session_state['chain'], prompt, session_id, callbacks=[st_callback])
-                        content = response.get("content", "No response content")
-                        st.markdown(content)
-                        message = {"role": "assistant", "content": content}
+                    response = ask_question(qa, prompt, session_id)
+                    if isinstance(response, dict) and 'content' in response:
+                        st.markdown(response['content'])
+                        message = {"role": "assistant", "content": response['content']}
                     else:
-                        st.error("Chain is not initialized. Please try refreshing the page.")
-                        return
+                        raise ValueError("Unexpected response format")
                 except Exception as e:
                     logging.error(f"Error during question answering: {e}")
-                    error_message = "Sorry, there was an error processing your request."
-                    st.write(error_message)
-                    message = {"role": "assistant", "content": error_message}
+                    message = {"role": "assistant", "content": "Sorry, there was an error processing your request."}
+                    st.write(message["content"])
         st.session_state.messages.append(message)
 
-def get_chain(openai_api_key=None, huggingfacehub_api_token=None):
+@st.cache_resource
+def get_retriever():
     try:
-        ensemble_retriever = get_retriever(openai_api_key=openai_api_key)
+        docs = load_data_files(data_dir="data")  
+        embeddings = OpenAIEmbeddings(openai_api_key=os.getenv('OPENAI_API_KEY'), model="text-embedding-3-small")
+        return ensemble_retriever_from_docs(docs, embeddings=embeddings)
+    except Exception as e:
+        logging.error(f"Error creating retriever: {e}")
+        st.error("Error initializing the application. Please check the logs.")
+        st.stop()
+
+def check_openai_api():
+    try:
+        openai.Model.list()
+        return True
+    except Exception as e:
+        logging.error(f"Error checking OpenAI API: {e}")
+        return False
+
+def check_huggingface_api():
+    try:
+        llm = HuggingFaceHub(repo_id="google/flan-t5-small", model_kwargs={"temperature":0, "max_length":64})
+        llm("Say foo:")
+        return True
+    except Exception as e:
+        logging.error(f"Error checking Hugging Face API: {e}")
+        return False
+
+def check_langsmith_api():
+    try:
+        client = Client()
+        client.list_projects()
+        return True
+    except Exception as e:
+        logging.error(f"Error checking LangSmith API: {e}")
+        return False
+
+def get_chain():
+    try:
+        logging.info('Start creating chain')
+        ensemble_retriever = get_retriever()
         chain = create_full_chain(
             ensemble_retriever,
-            openai_api_key=openai_api_key,
+            openai_api_key=os.getenv('OPENAI_API_KEY'),
             chat_memory=StreamlitChatMessageHistory(key="langchain_messages")
         )
+        logging.info('Chain creation complete')
         return ensemble_retriever, chain
     except Exception as e:
         logging.error(f"Error creating chain: {e}")
-        logging.exception("Exception details:")
         st.error("Error initializing the application. Please check the logs.")
-        raise
-
-def get_secret_or_input(secret_key, secret_name, info_link=None):
-    """
-    Retrieves a secret from Streamlit secrets or prompts the user for input.
-
-    Args:
-        secret_key: The key of the secret in Streamlit secrets.
-        secret_name: The user-friendly name of the secret.
-        info_link: An optional link to provide information about the secret.
-
-    Returns:
-        The secret value.
-    """
-    if secret_key in st.secrets:
-        st.write("Found %s secret" % secret_key)
-        secret_value = st.secrets[secret_key]
-    else:
-        st.write(f"Please provide your {secret_name}")
-        secret_value = st.text_input(secret_name, key=f"input_{secret_key}", type="password")
-        if secret_value:
-            st.session_state[secret_key] = secret_value
-        if info_link:
-            st.markdown(f"[Get an {secret_name}]({info_link})")
-    return secret_value
-
-async def process_uploaded_file_async(uploaded_file, openai_api_key=None):
-    """
-    Processes the uploaded file and adds it to the vector database.
-
-    Args:
-        uploaded_file: The uploaded file object from Streamlit.
-        openai_api_key: The OpenAI API key for embedding generation.
-    """
-    try:
-        if uploaded_file is not None:
-            # Get the file path from the uploaded file object
-            file_path = os.path.join("data", uploaded_file.name) 
-
-            # Save the uploaded file to the 'data' directory
-            with open(file_path, "wb") as f:
-                f.write(uploaded_file.getbuffer())
-
-            # Load the document using the saved file path
-            docs = load_data_files(data_dir=os.path.dirname(file_path))
-
-            # Use the same embedding model as in vector_store.py
-            embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key, model="text-embedding-3-small")
-            proxy_embeddings = EmbeddingProxy(embeddings)  
-
-            # Get the persistent Chroma client 
-            persist_directory = os.path.join("store", "chroma")
-            client = PersistentClient(path=persist_directory)
-
-            # Get or create the collection
-            collection = client.get_or_create_collection(name="chroma", embedding_function=proxy_embeddings)
-
-            # Generate unique IDs for the documents (using UUIDs)
-            import uuid
-            tasks = [asyncio.create_task(process_document(doc, proxy_embeddings)) for doc in docs]
-            processed_docs = await asyncio.gather(*tasks)
-
-            # Filter out None values and add only successfully processed documents
-            valid_docs = [doc for doc in processed_docs if doc is not None]
-
-            if valid_docs:
-                collection.add(
-                    ids=[doc['id'] for doc in valid_docs],
-                    embeddings=[doc['embedding'] for doc in valid_docs],
-                    documents=[doc['content'] for doc in valid_docs],
-                    metadatas=[doc['metadata'] for doc in valid_docs]
-                )
-                st.success(f"File uploaded and {len(valid_docs)} documents added to the knowledge base!")
-            else:
-                st.warning("No documents were successfully processed and added to the knowledge base.")
-
-    except Exception as e:
-        logging.error(f"Error processing uploaded file: {e}")
-        st.error("Error processing the file. Please check the logs.")
-
-async def process_document(doc, proxy_embeddings):
-    try:
-        doc.metadata['id'] = str(uuid.uuid4())
-        embedding = await proxy_embeddings.aembed_query(doc.page_content)
-        return {
-            'id': doc.metadata['id'],
-            'embedding': embedding,
-            'content': doc.page_content,
-            'metadata': doc.metadata
-        }
-    except Exception as e:
-        logging.error(f"Error processing document: {e}")
-        return None
+        st.stop()
 
 def reset(prompt_to_user="How may I help you?"):
     session_id = get_script_run_ctx().session_id
     clean_session_history(session_id)
     st.session_state.messages = [{"role": "assistant", "content": prompt_to_user}]
-    if 'chain' in st.session_state:
-        del st.session_state['chain']
-    st.session_state['init'] = False  # Reset the init flag
-    logging.info("Reset performed, chain will be reinitialized")
+    st.session_state['init'] = False
 
-@traceable
 def run():
-    """
-    Main function to run the Streamlit application.
-    """
     logging.info("Starting run() function")
-    ready = True
-    openai_api_key = st.session_state.get("OPENAI_API_KEY")
-    huggingfacehub_api_token = st.session_state.get("HUGGINGFACEHUB_API_TOKEN")
-    langchain_api_key = st.session_state.get("LANGCHAIN_API_KEY")
-
-    logging.info(f"API keys present: OpenAI: {bool(openai_api_key)}, HuggingFace: {bool(huggingfacehub_api_token)}, LangChain: {bool(langchain_api_key)}")
-
-    with st.sidebar:
-        if not openai_api_key:
-            openai_api_key = get_secret_or_input(
-                'OPENAI_API_KEY',
-                "OpenAI API key",
-                info_link="https://platform.openai.com/account/api-keys"
-            )
-        if not huggingfacehub_api_token:
-            huggingfacehub_api_token = get_secret_or_input(
-                'HUGGINGFACEHUB_API_TOKEN',
-                "HuggingFace Hub API Token",
-                info_link="https://huggingface.co/docs/huggingface_hub/main/en/quick-start#authentication"
-            )
-        if not langchain_api_key:
-            langchain_api_key = get_secret_or_input(
-                'LANGCHAIN_API_KEY',
-                "LangSmith API Key",
-                info_link="https://docs.langchain.com/docs/tracing/getting_started#setting-up-tracing"
-            )
-
-    if not openai_api_key:
-        st.warning("Missing OPENAI_API_KEY")
-        ready = False
-    if not huggingfacehub_api_token:
-        st.warning("Missing HUGGINGFACEHUB_API_TOKEN")
-        ready = False
-    if not langchain_api_key:
-        st.warning("Missing LANGCHAIN_API_KEY")
-        ready = False
-
-    uploaded_file = st.file_uploader("Choose a file to upload", type=["txt", "pdf"])
-    if uploaded_file:
-        asyncio.run(process_uploaded_file_async(uploaded_file, openai_api_key))
-
-    if ready:
+    
+    if 'chain' not in st.session_state or not st.session_state.get('init', False):
         try:
-            logging.info('Entering run loop')
-
-            # Set LangSmith environment variables
-            os.environ["LANGCHAIN_API_KEY"] = langchain_api_key 
-            os.environ["LANGCHAIN_TRACING_V2"] = "true"
-            os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
-            os.environ["LANGCHAIN_PROJECT"] = "rx-kenny-rag-streamlit-dev" # or your project name
-
-            if 'init' not in st.session_state:
-                st.session_state['init'] = False
-
-            if 'chain' not in st.session_state or not st.session_state['init']:
-                logging.info("Initializing chain")
-                ensemble_retriever, chain = get_chain(
-                    openai_api_key=openai_api_key,
-                    huggingfacehub_api_token=huggingfacehub_api_token
-                )
-                st.session_state['ensemble_retriever'] = ensemble_retriever
-                st.session_state['chain'] = chain
-                st.session_state['init'] = True
-                logging.info("Chain initialized and stored in session state")
-            else:
-                logging.info("Chain already initialized")
-
-            # Chat Interface
-            st.subheader("Ask questions about Equity Bank's products and services:")
-            if 'chain' in st.session_state and st.session_state['init']:
-                logging.info("Showing UI")
-                show_ui(st.session_state['chain'], "How can I assist you today?")
-            else:
-                logging.warning("Chain not initialized, showing warning")
-                st.warning("The chat interface is not ready yet. Please wait for initialization to complete.")
-            st.button("Reset history", on_click=reset)
-
+            st.session_state['ensemble_retriever'], st.session_state['chain'] = get_chain()
+            st.session_state['init'] = True
+            logging.info("Chain initialized successfully")
         except Exception as e:
-            logging.error(f"Error initializing application: {e}")
-            logging.exception("Exception details:") 
-            st.error("Error initializing the application. Please check the logs.")
-    else:
-        logging.warning("Not ready, stopping execution")
+            logging.error(f"Error initializing chain: {e}")
+            st.error(f"Error initializing the application: {e}. Please check the logs.")
+            return
+
+    if not check_openai_api():
+        st.error("OpenAI API key is invalid or service is unavailable.")
         st.stop()
 
+    if not check_huggingface_api():
+        st.error("Hugging Face Hub API key is invalid or service is unavailable.")
+        st.stop()
+
+    if not check_langsmith_api():
+        st.error("LangSmith API key is invalid or service is unavailable.")
+        st.stop()
+
+    st.subheader("Ask questions about Equity Bank's products and services:")
+    show_ui(st.session_state['chain'], "How can I assist you today?")
+    st.button("Reset history", on_click=reset)
+    
     logging.info("Finished run() function")
+
+if st.button("Clear Cache and Reinitialize"):
+    st.cache_resource.clear()
+    st.session_state.clear()
+    st.experimental_rerun()
 
 run()

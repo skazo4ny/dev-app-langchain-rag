@@ -1,9 +1,8 @@
 import logging
 import os
 from typing import List
-import asyncio
 
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain.embeddings import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
 from local_loader import load_data_files
 from splitter import split_documents
@@ -26,14 +25,6 @@ class EmbeddingProxy:
         sleep(EMBED_DELAY)
         return self.embedding.embed_query(text)
 
-    async def aembed_documents(self, texts: List[str]) -> List[List[float]]:
-        await asyncio.sleep(EMBED_DELAY)
-        return await asyncio.to_thread(self.embedding.embed_documents, texts)
-
-    async def aembed_query(self, text: str) -> List[float]:
-        await asyncio.sleep(EMBED_DELAY)
-        return await asyncio.to_thread(self.embedding.embed_query, text)
-
 
 # This happens all at once, not ideal for large datasets.
 def create_vector_db(texts, embeddings=None, collection_name="chroma"):
@@ -42,7 +33,7 @@ def create_vector_db(texts, embeddings=None, collection_name="chroma"):
 
     if not embeddings:
         openai_api_key = os.environ["OPENAI_API_KEY"]
-        embeddings = HuggingFaceEmbeddings()
+        embeddings = OpenAIEmbeddings(openai_api_key=os.environ["OPENAI_API_KEY"], model="text-embedding-ada-002")
 
     proxy_embeddings = EmbeddingProxy(embeddings)
 
