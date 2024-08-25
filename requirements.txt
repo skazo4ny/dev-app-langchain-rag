@@ -10,3 +10,4 @@ pypdf==4.3.1
 rank_bm25==0.2.2
 tavily-python==0.4.0
 langsmith
+python-dotenv

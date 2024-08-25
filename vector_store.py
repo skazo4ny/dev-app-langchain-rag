@@ -1,6 +1,7 @@
 import logging
 import os
 from typing import List
+import asyncio
 
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
@@ -24,6 +25,14 @@ class EmbeddingProxy:
     def embed_query(self, text: str) -> List[float]:
         sleep(EMBED_DELAY)
         return self.embedding.embed_query(text)
+
+    async def aembed_documents(self, texts: List[str]) -> List[List[float]]:
+        await asyncio.sleep(EMBED_DELAY)
+        return await asyncio.to_thread(self.embedding.embed_documents, texts)
+
+    async def aembed_query(self, text: str) -> List[float]:
+        await asyncio.sleep(EMBED_DELAY)
+        return await asyncio.to_thread(self.embedding.embed_query, text)
 
 
 # This happens all at once, not ideal for large datasets.

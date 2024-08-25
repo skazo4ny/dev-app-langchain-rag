@@ -1,6 +1,8 @@
 import os
 import streamlit as st
 import logging
+import asyncio
+from chromadb import Chroma
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_community.retrievers import BM25Retriever
@@ -8,7 +10,6 @@ from pathlib import Path
 from streamlit.runtime.scriptrunner.script_run_context import get_script_run_ctx
 
 # Langchain tracing
-# streamlit_app.py
 from langsmith import initialize_tracing  # Corrected import
 from langchain.callbacks import StreamlitCallbackHandler
 
@@ -84,16 +85,6 @@ def get_retriever(openai_api_key=None):
 
 
 def get_chain(openai_api_key=None, huggingfacehub_api_token=None):
-    """
-    Creates the question answering chain.
-
-    Args:
-        openai_api_key: The OpenAI API key.
-        huggingfacehub_api_token: The Hugging Face Hub API token.
-
-    Returns:
-        A LangChain question answering chain.
-    """
     try:
         ensemble_retriever = get_retriever(openai_api_key=openai_api_key)
         chain = create_full_chain(
@@ -101,11 +92,12 @@ def get_chain(openai_api_key=None, huggingfacehub_api_token=None):
             openai_api_key=openai_api_key,
             chat_memory=StreamlitChatMessageHistory(key="langchain_messages")
         )
-        return chain
+        return ensemble_retriever, chain
     except Exception as e:
         logging.error(f"Error creating chain: {e}")
+        logging.exception("Exception details:")
         st.error("Error initializing the application. Please check the logs.")
-        st.stop()  # Stop execution if chain creation fails
+        raise
 
 def get_secret_or_input(secret_key, secret_name, info_link=None):
     """
@@ -131,7 +123,7 @@ def get_secret_or_input(secret_key, secret_name, info_link=None):
             st.markdown(f"[Get an {secret_name}]({info_link})")
     return secret_value
 
-def process_uploaded_file(uploaded_file, openai_api_key=None):
+async def process_uploaded_file_async(uploaded_file, openai_api_key=None):
     """
     Processes the uploaded file and adds it to the vector database.
 
@@ -167,18 +159,37 @@ def process_uploaded_file(uploaded_file, openai_api_key=None):
             for doc in docs:
                 doc.metadata['id'] = str(uuid.uuid4())
 
-            # Add the new documents to the collection
+            # Асинхронная обработка документов
+            tasks = [asyncio.create_task(process_document(doc, proxy_embeddings)) for doc in docs]
+            processed_docs = await asyncio.gather(*tasks)
+            
+            # Добавление обработанных документов в коллекцию
             collection.add(
-                ids=[doc.metadata['id'] for doc in docs],
-                embeddings=[proxy_embeddings.embed_query(doc.page_content) for doc in docs],
-                documents=[doc.page_content for doc in docs],
-                metadatas=[doc.metadata for doc in docs]
+                ids=[doc['id'] for doc in processed_docs],
+                embeddings=[doc['embedding'] for doc in processed_docs],
+                documents=[doc['content'] for doc in processed_docs],
+                metadatas=[doc['metadata'] for doc in processed_docs]
             )
 
             st.success("File uploaded and added to the knowledge base!")
     except Exception as e:
         logging.error(f"Error processing uploaded file: {e}")
         st.error("Error processing the file. Please check the logs.")
+
+async def process_document(doc, proxy_embeddings):
+    doc.metadata['id'] = str(uuid.uuid4())
+    embedding = await proxy_embeddings.aembed_query(doc.page_content)
+    return {
+        'id': doc.metadata['id'],
+        'embedding': embedding,
+        'content': doc.page_content,
+        'metadata': doc.metadata
+    }
+
+def reset(prompt_to_user="How may I help you?"):
+    session_id = get_script_run_ctx().session_id
+    clean_session_history(session_id)
+    st.session_state.messages = [{"role": "assistant", "content": prompt_to_user}]
 
 def run():
     """
@@ -218,6 +229,10 @@ def run():
     if not langchain_api_key:
         st.warning("Missing LANGCHAIN_API_KEY")
         ready = False
+
+    uploaded_file = st.file_uploader("Choose a file to upload", type=["txt", "pdf"])
+    if uploaded_file:
+        asyncio.run(process_uploaded_file_async(uploaded_file, openai_api_key))
 
     if ready:
         try:
