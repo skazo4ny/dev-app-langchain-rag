@@ -45,15 +45,18 @@ def ask_question(chain, query, session_id, callbacks=None):
     """Asks a question using the provided chain and session ID."""
     try:
         if chain is None:
+            logging.error("Chain is None in ask_question function")
             raise ValueError("Chain is not initialized")
+        logging.info(f"Invoking chain with query: {query}")
         response = chain.invoke(
             {"question": query},
             config={"configurable": {"session_id": session_id}},
             callbacks=callbacks
         )
+        logging.info("Chain invocation successful")
         return response
     except Exception as e:
-        logging.error(f"Error asking question: {e}")
+        logging.error(f"Error asking question: {e}", exc_info=True)
         return {"content": "Sorry, there was an error processing your request."}
 
 

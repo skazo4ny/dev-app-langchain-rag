@@ -23,11 +23,44 @@ from local_loader import load_data_files, load_file
 from vector_store import EmbeddingProxy 
 from memory import clean_session_history
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+os.environ["USER_AGENT"] = "Rx Example RAG Streamlit App"
 
 st.set_page_config(page_title="Rx Example RAG")
 st.title("Rx Example RAG")
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Load environment variables
+from dotenv import load_dotenv
+load_dotenv()
+
+# Initialize OpenAI API key
+openai_api_key = os.getenv("OPENAI_API_KEY")
+if not openai_api_key:
+    st.error("OpenAI API key not found. Please set it in your .env file.")
+    st.stop()
+
+@st.cache_resource
+def get_retriever(openai_api_key=None):
+    """
+    Creates and caches the document retriever.
+
+    Args:
+        openai_api_key: The OpenAI API key.
+
+    Returns:
+        An ensemble document retriever.
+    """
+    try:
+        docs = load_data_files(data_dir="data")  
+        embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key, model="text-embedding-3-small") 
+        return ensemble_retriever_from_docs(docs, embeddings=embeddings)
+    except Exception as e:
+        logging.error(f"Error creating retriever: {e}")
+        logging.exception("Exception details:")
+        st.error("Error initializing the application. Please check the logs.")
+        st.stop() 
 
 def show_ui(qa, prompt_to_user="How may I help you?"):
     """
@@ -58,38 +91,20 @@ def show_ui(qa, prompt_to_user="How may I help you?"):
             with st.spinner("Thinking..."):
                 try:
                     session_id = get_script_run_ctx().session_id
-                    response = ask_question(qa, prompt, session_id, callbacks=[st_callback])
-                    content = response.get("content", "No response content")
-                    st.markdown(content)
-                    message = {"role": "assistant", "content": content}
+                    if 'chain' in st.session_state:
+                        response = ask_question(st.session_state['chain'], prompt, session_id, callbacks=[st_callback])
+                        content = response.get("content", "No response content")
+                        st.markdown(content)
+                        message = {"role": "assistant", "content": content}
+                    else:
+                        st.error("Chain is not initialized. Please try refreshing the page.")
+                        return
                 except Exception as e:
                     logging.error(f"Error during question answering: {e}")
                     error_message = "Sorry, there was an error processing your request."
                     st.write(error_message)
                     message = {"role": "assistant", "content": error_message}
         st.session_state.messages.append(message)
-
-@st.cache_resource
-def get_retriever(openai_api_key=None):
-    """
-    Creates and caches the document retriever.
-
-    Args:
-        openai_api_key: The OpenAI API key.
-
-    Returns:
-        An ensemble document retriever.
-    """
-    try:
-        docs = load_data_files(data_dir="data")  
-        embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key, model="text-embedding-3-small") 
-        return ensemble_retriever_from_docs(docs, embeddings=embeddings)
-    except Exception as e:
-        logging.error(f"Error creating retriever: {e}")
-        logging.exception("Exception details:")
-        st.error("Error initializing the application. Please check the logs.")
-        st.stop() 
-
 
 def get_chain(openai_api_key=None, huggingfacehub_api_token=None):
     try:
@@ -204,18 +219,30 @@ def reset(prompt_to_user="How may I help you?"):
     st.session_state.messages = [{"role": "assistant", "content": prompt_to_user}]
     if 'chain' in st.session_state:
         del st.session_state['chain']
-    st.session_state['init'] = False  # Force reinitialization of the chain
+    st.session_state['init'] = False  # Reset the init flag
     logging.info("Reset performed, chain will be reinitialized")
+
+# Initialize the chain
+try:
+    retriever = get_retriever(openai_api_key)
+    chain = create_full_chain(retriever, openai_api_key=openai_api_key)
+    st.session_state['chain'] = chain
+except Exception as e:
+    st.error(f"Error initializing the chain: {str(e)}")
+    st.stop()
 
 @traceable
 def run():
     """
     Main function to run the Streamlit application.
     """
+    logging.info("Starting run() function")
     ready = True
     openai_api_key = st.session_state.get("OPENAI_API_KEY")
     huggingfacehub_api_token = st.session_state.get("HUGGINGFACEHUB_API_TOKEN")
     langchain_api_key = st.session_state.get("LANGCHAIN_API_KEY")
+
+    logging.info(f"API keys present: OpenAI: {bool(openai_api_key)}, HuggingFace: {bool(huggingfacehub_api_token)}, LangChain: {bool(langchain_api_key)}")
 
     with st.sidebar:
         if not openai_api_key:
@@ -253,7 +280,7 @@ def run():
 
     if ready:
         try:
-            logging.info('run loop')
+            logging.info('Entering run loop')
 
             # Set LangSmith environment variables
             os.environ["LANGCHAIN_API_KEY"] = langchain_api_key 
@@ -261,7 +288,11 @@ def run():
             os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
             os.environ["LANGCHAIN_PROJECT"] = "rx-kenny-rag-streamlit-dev" # or your project name
 
+            if 'init' not in st.session_state:
+                st.session_state['init'] = False
+
             if 'chain' not in st.session_state or not st.session_state['init']:
+                logging.info("Initializing chain")
                 ensemble_retriever, chain = get_chain(
                     openai_api_key=openai_api_key,
                     huggingfacehub_api_token=huggingfacehub_api_token
@@ -270,12 +301,16 @@ def run():
                 st.session_state['chain'] = chain
                 st.session_state['init'] = True
                 logging.info("Chain initialized and stored in session state")
+            else:
+                logging.info("Chain already initialized")
 
             # Chat Interface
             st.subheader("Ask questions about Equity Bank's products and services:")
             if 'chain' in st.session_state and st.session_state['init']:
+                logging.info("Showing UI")
                 show_ui(st.session_state['chain'], "How can I assist you today?")
             else:
+                logging.warning("Chain not initialized, showing warning")
                 st.warning("The chat interface is not ready yet. Please wait for initialization to complete.")
             st.button("Reset history", on_click=reset)
 
@@ -284,6 +319,9 @@ def run():
             logging.exception("Exception details:") 
             st.error("Error initializing the application. Please check the logs.")
     else:
+        logging.warning("Not ready, stopping execution")
         st.stop()
+
+    logging.info("Finished run() function")
 
 run()
