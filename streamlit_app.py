@@ -14,7 +14,7 @@ from streamlit.runtime.scriptrunner.script_run_context import get_script_run_ctx
 
 # Langchain tracing
 from langsmith.run_helpers import traceable
-from langchain.callbacks import StreamlitCallbackHandler
+from langchain_community.callbacks.streamlit import StreamlitCallbackHandler
 
 from ensemble import ensemble_retriever_from_docs
 from full_chain import create_full_chain, ask_question
@@ -59,10 +59,12 @@ def show_ui(qa, prompt_to_user="How may I help you?"):
                     session_id = get_script_run_ctx().session_id
                     response = ask_question(qa, prompt, session_id, callbacks=[st_callback])
                     st.markdown(response.content)
+                    message = {"role": "assistant", "content": response.content}
                 except Exception as e:
                     logging.error(f"Error during question answering: {e}")
-                    st.write("Sorry, there was an error processing your request.")
-        message = {"role": "assistant", "content": response.content if response else "Error"}
+                    error_message = "Sorry, there was an error processing your request."
+                    st.write(error_message)
+                    message = {"role": "assistant", "content": error_message}
         st.session_state.messages.append(message)
 
 @st.cache_resource
@@ -162,7 +164,7 @@ async def process_uploaded_file_async(uploaded_file, openai_api_key=None):
             for doc in docs:
                 doc.metadata['id'] = str(uuid.uuid4())
 
-            # Асинхронная обработк документо��
+            # Асинхронная обработк документо
             tasks = [asyncio.create_task(process_document(doc, proxy_embeddings)) for doc in docs]
             processed_docs = await asyncio.gather(*tasks)
             

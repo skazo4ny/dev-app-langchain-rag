@@ -41,12 +41,13 @@ def create_full_chain(retriever, openai_api_key=None, chat_memory=None):
         raise
 
 
-def ask_question(chain, query, session_id):
+def ask_question(chain, query, session_id, callbacks=None):
     """Asks a question using the provided chain and session ID."""
     try:
         response = chain.invoke(
             {"question": query},
-            config={"configurable": {"session_id": session_id}}
+            config={"configurable": {"session_id": session_id}},
+            callbacks=callbacks
         )
         return response
     except Exception as e:
