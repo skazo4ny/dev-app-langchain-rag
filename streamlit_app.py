@@ -202,7 +202,10 @@ def reset(prompt_to_user="How may I help you?"):
     session_id = get_script_run_ctx().session_id
     clean_session_history(session_id)
     st.session_state.messages = [{"role": "assistant", "content": prompt_to_user}]
+    if 'chain' in st.session_state:
+        del st.session_state['chain']
     st.session_state['init'] = False  # Force reinitialization of the chain
+    logging.info("Reset performed, chain will be reinitialized")
 
 @traceable
 def run():
@@ -258,16 +261,22 @@ def run():
             os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
             os.environ["LANGCHAIN_PROJECT"] = "rx-kenny-rag-streamlit-dev" # or your project name
 
-            if not st.session_state.get('init', False):
-                st.session_state['ensemble_retriever'], st.session_state['chain'] = get_chain(
+            if 'chain' not in st.session_state or not st.session_state['init']:
+                ensemble_retriever, chain = get_chain(
                     openai_api_key=openai_api_key,
                     huggingfacehub_api_token=huggingfacehub_api_token
                 )
+                st.session_state['ensemble_retriever'] = ensemble_retriever
+                st.session_state['chain'] = chain
                 st.session_state['init'] = True
+                logging.info("Chain initialized and stored in session state")
 
             # Chat Interface
             st.subheader("Ask questions about Equity Bank's products and services:")
-            show_ui(st.session_state['chain'], "How can I assist you today?")
+            if 'chain' in st.session_state and st.session_state['init']:
+                show_ui(st.session_state['chain'], "How can I assist you today?")
+            else:
+                st.warning("The chat interface is not ready yet. Please wait for initialization to complete.")
             st.button("Reset history", on_click=reset)
 
         except Exception as e:
