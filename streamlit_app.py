@@ -1,4 +1,7 @@
 import os
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import streamlit as st
 import logging
 import asyncio
@@ -159,7 +162,7 @@ async def process_uploaded_file_async(uploaded_file, openai_api_key=None):
             for doc in docs:
                 doc.metadata['id'] = str(uuid.uuid4())
 
-            # Асинхронная обработка документов
+            # Асинхронная обработк�� документов
             tasks = [asyncio.create_task(process_document(doc, proxy_embeddings)) for doc in docs]
             processed_docs = await asyncio.gather(*tasks)
             
