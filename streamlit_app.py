@@ -11,6 +11,7 @@ from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_community.retrievers import BM25Retriever
 from pathlib import Path
 from streamlit.runtime.scriptrunner.script_run_context import get_script_run_ctx
+from chromadb import PersistentClient
 
 # Langchain tracing
 from langsmith.run_helpers import traceable
@@ -162,40 +163,46 @@ async def process_uploaded_file_async(uploaded_file, openai_api_key=None):
 
             # Generate unique IDs for the documents (using UUIDs)
             import uuid
-            for doc in docs:
-                doc.metadata['id'] = str(uuid.uuid4())
-
-            # Асинхронная обработк документо
             tasks = [asyncio.create_task(process_document(doc, proxy_embeddings)) for doc in docs]
             processed_docs = await asyncio.gather(*tasks)
-            
-            # Добавление обработанных документов в коллекцию
-            collection.add(
-                ids=[doc['id'] for doc in processed_docs],
-                embeddings=[doc['embedding'] for doc in processed_docs],
-                documents=[doc['content'] for doc in processed_docs],
-                metadatas=[doc['metadata'] for doc in processed_docs]
-            )
 
-            st.success("File uploaded and added to the knowledge base!")
+            # Filter out None values and add only successfully processed documents
+            valid_docs = [doc for doc in processed_docs if doc is not None]
+
+            if valid_docs:
+                collection.add(
+                    ids=[doc['id'] for doc in valid_docs],
+                    embeddings=[doc['embedding'] for doc in valid_docs],
+                    documents=[doc['content'] for doc in valid_docs],
+                    metadatas=[doc['metadata'] for doc in valid_docs]
+                )
+                st.success(f"File uploaded and {len(valid_docs)} documents added to the knowledge base!")
+            else:
+                st.warning("No documents were successfully processed and added to the knowledge base.")
+
     except Exception as e:
         logging.error(f"Error processing uploaded file: {e}")
         st.error("Error processing the file. Please check the logs.")
 
 async def process_document(doc, proxy_embeddings):
-    doc.metadata['id'] = str(uuid.uuid4())
-    embedding = await proxy_embeddings.aembed_query(doc.page_content)
-    return {
-        'id': doc.metadata['id'],
-        'embedding': embedding,
-        'content': doc.page_content,
-        'metadata': doc.metadata
-    }
+    try:
+        doc.metadata['id'] = str(uuid.uuid4())
+        embedding = await proxy_embeddings.aembed_query(doc.page_content)
+        return {
+            'id': doc.metadata['id'],
+            'embedding': embedding,
+            'content': doc.page_content,
+            'metadata': doc.metadata
+        }
+    except Exception as e:
+        logging.error(f"Error processing document: {e}")
+        return None
 
 def reset(prompt_to_user="How may I help you?"):
     session_id = get_script_run_ctx().session_id
     clean_session_history(session_id)
     st.session_state.messages = [{"role": "assistant", "content": prompt_to_user}]
+    st.session_state['init'] = False  # Force reinitialization of the chain
 
 @traceable
 def run():
