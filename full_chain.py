@@ -14,7 +14,7 @@ from rag_chain import make_rag_chain
 # Configure logging 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def create_full_chain(retriever, openai_api_key=None):
+def create_full_chain(retriever, openai_api_key=None, chat_memory=None):
     """Creates the full RAG chain with memory."""
     try:
         model = get_model("ChatGPT", openai_api_key=openai_api_key)
@@ -34,11 +34,11 @@ def create_full_chain(retriever, openai_api_key=None):
         )
 
         rag_chain = make_rag_chain(model, retriever, rag_prompt=prompt)
-        chain = create_memory_chain(model, rag_chain)
+        chain = create_memory_chain(model, rag_chain, chat_memory)
         return chain
     except Exception as e:
         logging.error(f"Error creating full chain: {e}")
-        # Handle the error appropriately (e.g., return a simpler chain or raise an exception)
+        raise
 
 
 def ask_question(chain, query, session_id):
