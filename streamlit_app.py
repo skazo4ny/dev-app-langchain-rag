@@ -58,8 +58,9 @@ def show_ui(qa, prompt_to_user="How may I help you?"):
                 try:
                     session_id = get_script_run_ctx().session_id
                     response = ask_question(qa, prompt, session_id, callbacks=[st_callback])
-                    st.markdown(response.content)
-                    message = {"role": "assistant", "content": response.content}
+                    content = response.get("content", "No response content")
+                    st.markdown(content)
+                    message = {"role": "assistant", "content": content}
                 except Exception as e:
                     logging.error(f"Error during question answering: {e}")
                     error_message = "Sorry, there was an error processing your request."

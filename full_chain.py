@@ -44,6 +44,8 @@ def create_full_chain(retriever, openai_api_key=None, chat_memory=None):
 def ask_question(chain, query, session_id, callbacks=None):
     """Asks a question using the provided chain and session ID."""
     try:
+        if chain is None:
+            raise ValueError("Chain is not initialized")
         response = chain.invoke(
             {"question": query},
             config={"configurable": {"session_id": session_id}},
@@ -52,7 +54,7 @@ def ask_question(chain, query, session_id, callbacks=None):
         return response
     except Exception as e:
         logging.error(f"Error asking question: {e}")
-        return "Sorry, there was an error processing your request."
+        return {"content": "Sorry, there was an error processing your request."}
 
 
 def main():
