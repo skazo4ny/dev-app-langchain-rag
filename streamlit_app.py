@@ -4,8 +4,8 @@ import logging
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain.embeddings import OpenAIEmbeddings
 from streamlit.runtime.scriptrunner.script_run_context import get_script_run_ctx
-import openai
-from langchain.llms import OpenAI
+from openai import OpenAI
+# from langchain.llms import OpenAI
 from langchain_community.llms import HuggingFaceHub
 from langsmith import Client
 
@@ -13,6 +13,12 @@ from ensemble import ensemble_retriever_from_docs
 from full_chain import create_full_chain, ask_question
 from local_loader import load_data_files
 from memory import clean_session_history
+
+# Read API keys at the beginning
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+HUGGINGFACEHUB_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
+LANGCHAIN_API_KEY = os.getenv("LANGCHAIN_API_KEY")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -66,7 +72,12 @@ def get_retriever():
 
 def check_openai_api():
     try:
-        openai.Model.list()
+        client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",  # Or any other suitable model
+            messages=[{"role": "user", "content": "Say hello"}],
+            max_tokens=5
+        )
         return True
     except Exception as e:
         logging.error(f"Error checking OpenAI API: {e}")
@@ -74,8 +85,9 @@ def check_openai_api():
 
 def check_huggingface_api():
     try:
-        llm = HuggingFaceHub(repo_id="google/flan-t5-small", model_kwargs={"temperature":0, "max_length":64})
-        llm("Say foo:")
+        from huggingface_hub import hf_hub_download
+        # Try to download a small file from a public repo
+        hf_hub_download(repo_id="google/flan-t5-small", filename="config.json")
         return True
     except Exception as e:
         logging.error(f"Error checking Hugging Face API: {e}")
@@ -103,6 +115,9 @@ def get_chain():
         return ensemble_retriever, chain
     except Exception as e:
         logging.error(f"Error creating chain: {e}")
+        # Print the traceback for more detailed debugging
+        import traceback
+        traceback.print_exc()
         st.error("Error initializing the application. Please check the logs.")
         st.stop()
 
@@ -146,6 +161,10 @@ def run():
 if st.button("Clear Cache and Reinitialize"):
     st.cache_resource.clear()
     st.session_state.clear()
+    st.session_state['rerun'] = True
+
+if st.session_state.get('rerun', False):
+    st.session_state['rerun'] = False
     st.experimental_rerun()
 
 run()

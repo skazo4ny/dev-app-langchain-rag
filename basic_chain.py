@@ -3,7 +3,7 @@ import logging
 
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
+from openai import OpenAI
 from langchain_community.llms import HuggingFaceHub
 from langchain_community.chat_models.huggingface import ChatHuggingFace
 from dotenv import load_dotenv
@@ -29,7 +29,17 @@ def get_model(repo_id="ChatGPT", **kwargs):
         if repo_id == "ChatGPT":
             model_name = kwargs.get("model_name", "gpt-4o-mini")
             logging.info(f"Loading OpenAI model: {model_name}")
-            chat_model = ChatOpenAI(temperature=0, model=model_name, **kwargs)
+            client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+            # Using OpenAI's client for chat completions
+            def _call(messages):
+                response = client.chat.completions.create(
+                    model=model_name,
+                    messages=messages,
+                    temperature=0,
+                    **kwargs
+                )
+                return response.choices[0].message.content
+            chat_model = _call
         else:
             logging.info(f"Loading Hugging Face model: {repo_id}")
             huggingfacehub_api_token = kwargs.get("HUGGINGFACEHUB_API_TOKEN", None)

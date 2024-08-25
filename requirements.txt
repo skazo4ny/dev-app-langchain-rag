@@ -13,3 +13,4 @@ langsmith
 python-dotenv
 pysqlite3-binary
 rank_bm25
+openai
