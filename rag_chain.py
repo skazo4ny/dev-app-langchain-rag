@@ -55,28 +55,25 @@ def make_rag_chain(model, retriever, rag_prompt = None):
 
 def main():
     load_dotenv()
-    model = get_model("ChatGPT")
-    docs = load_wiki_articles(query="Bertrand Russell", load_max_docs=5) # Updated 
+    docs = load_data_files(data_dir="data")  # Load financial data
     texts = split_documents(docs)
     vs = create_vector_db(texts)
 
     prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are a professor who teaches philosophical concepts to beginners."),
+        ("system", "You are a financial consultant specializing in Equity Bank products."),
         ("user", "{input}")
     ])
-    # Besides similarly search, you can also use maximal marginal relevance (MMR) for selecting results.
-    # retriever = vs.as_retriever(search_type="mmr")
     retriever = vs.as_retriever()
 
     output_parser = StrOutputParser()
-    chain = basic_chain(model, prompt)
+    chain = basic_chain(model=get_model("ChatGPT"), prompt=prompt)  # Use your preferred model
     base_chain = chain | output_parser
-    rag_chain = make_rag_chain(model, retriever) | output_parser
+    rag_chain = make_rag_chain(model=get_model("ChatGPT"), retriever=retriever) | output_parser  # Use your preferred model
 
     questions = [
-        "What were the most important contributions of Bertrand Russell to philosophy?",
-        "What was the first book Bertrand Russell published?",
-        "What was most notable about \"An Essay on the Foundations of Geometry\"?",
+        "What are the benefits of an Equity Ordinary Account?",
+        "What are the interest rates for home loans?",
+        "How do I apply for an Equity Gold Credit Card?"
     ]
     for q in questions:
         print("\n--- QUESTION: ", q)

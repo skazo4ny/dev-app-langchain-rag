@@ -14,7 +14,8 @@ from rag_chain import make_rag_chain
 # Configure logging 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def create_full_chain(retriever, openai_api_key=None, chat_memory=ChatMessageHistory()):
+def create_full_chain(retriever, openai_api_key=None):
+    """Creates the full RAG chain with memory."""
     try:
         model = get_model("ChatGPT", openai_api_key=openai_api_key)
         system_prompt = """You are a helpful and knowledgeable financial consultant. 
@@ -33,29 +34,28 @@ def create_full_chain(retriever, openai_api_key=None, chat_memory=ChatMessageHis
         )
 
         rag_chain = make_rag_chain(model, retriever, rag_prompt=prompt)
-        chain = create_memory_chain(model, rag_chain, chat_memory)
+        chain = create_memory_chain(model, rag_chain)
         return chain
     except Exception as e:
         logging.error(f"Error creating full chain: {e}")
-        # Handle the error:
-        # - You could return a simpler chain or a default response
-        # - Raise an exception to stop execution
+        # Handle the error appropriately (e.g., return a simpler chain or raise an exception)
 
 
-def ask_question(chain, query):
+def ask_question(chain, query, session_id):
+    """Asks a question using the provided chain and session ID."""
     try:
         response = chain.invoke(
             {"question": query},
-            config={"configurable": {"session_id": "foo"}}
+            config={"configurable": {"session_id": session_id}}
         )
         return response
     except Exception as e:
         logging.error(f"Error asking question: {e}")
-        # Handle the error, e.g., return an error message
         return "Sorry, there was an error processing your request."
 
 
 def main():
+    """Main function for testing the full RAG chain."""
     load_dotenv()
 
     from rich.console import Console
@@ -75,7 +75,7 @@ def main():
         ]
 
         for query in queries:
-            response = ask_question(chain, query)
+            response = ask_question(chain, query, session_id="test_session")  # Pass a session ID
             console.print(Markdown(response.content))
 
     except Exception as e:

@@ -3,18 +3,19 @@ import streamlit as st
 import logging
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_community.retrievers import BM25Retriever
+from pathlib import Path
+from streamlit.runtime.scriptrunner.script_run_context import get_script_run_ctx
 
-# Override sqlite3 before importing langchain_chroma
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3') 
-
-from langchain_chroma import Chroma # Import Chroma from langchain_chroma
+# Langchain tracing
+from langchain.callbacks import StreamlitCallbackHandler
+from langchain.smith import initialize_tracing
 
 from ensemble import ensemble_retriever_from_docs
 from full_chain import create_full_chain, ask_question
-from local_loader import load_data_files 
+from local_loader import load_data_files, load_file
 from vector_store import EmbeddingProxy 
+from memory import clean_session_history
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -30,8 +31,12 @@ def show_ui(qa, prompt_to_user="How may I help you?"):
         qa: The LangChain chain for question answering.
         prompt_to_user: The initial prompt to display to the user.
     """
+    logging.info(f"show_ui running: {prompt_to_user}")
     if "messages" not in st.session_state.keys():
         st.session_state.messages = [{"role": "assistant", "content": prompt_to_user}]
+
+    # Add LangSmith tracing callback
+    st_callback = StreamlitCallbackHandler(st.container())
 
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
@@ -46,7 +51,8 @@ def show_ui(qa, prompt_to_user="How may I help you?"):
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 try:
-                    response = ask_question(qa, prompt)
+                    session_id = get_script_run_ctx().session_id
+                    response = ask_question(qa, prompt, session_id, callbacks=[st_callback])
                     st.markdown(response.content)
                 except Exception as e:
                     logging.error(f"Error during question answering: {e}")
@@ -67,12 +73,13 @@ def get_retriever(openai_api_key=None):
     """
     try:
         docs = load_data_files(data_dir="data")  
-        embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key, model="text-embedding-3-small")
+        embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key, model="text-embedding-3-small") 
         return ensemble_retriever_from_docs(docs, embeddings=embeddings)
     except Exception as e:
         logging.error(f"Error creating retriever: {e}")
+        logging.exception("Exception details:")
         st.error("Error initializing the application. Please check the logs.")
-        st.stop()  # Stop execution if retriever creation fails
+        st.stop() 
 
 
 def get_chain(openai_api_key=None, huggingfacehub_api_token=None):
@@ -179,6 +186,7 @@ def run():
     ready = True
     openai_api_key = st.session_state.get("OPENAI_API_KEY")
     huggingfacehub_api_token = st.session_state.get("HUGGINGFACEHUB_API_TOKEN")
+    langchain_api_key = st.session_state.get("LANGCHAIN_API_KEY")
 
     with st.sidebar:
         if not openai_api_key:
@@ -193,6 +201,12 @@ def run():
                 "HuggingFace Hub API Token",
                 info_link="https://huggingface.co/docs/huggingface_hub/main/en/quick-start#authentication"
             )
+        if not langchain_api_key:
+            langchain_api_key = get_secret_or_input(
+                'LANGCHAIN_API_KEY',
+                "LangSmith API Key",
+                info_link="https://docs.langchain.com/docs/tracing/getting_started#setting-up-tracing"
+            )
 
     if not openai_api_key:
         st.warning("Missing OPENAI_API_KEY")
@@ -200,28 +214,36 @@ def run():
     if not huggingfacehub_api_token:
         st.warning("Missing HUGGINGFACEHUB_API_TOKEN")
         ready = False
+    if not langchain_api_key:
+        st.warning("Missing LANGCHAIN_API_KEY")
+        ready = False
 
     if ready:
         try:
-            chain = get_chain(
-                openai_api_key=openai_api_key,
-                huggingfacehub_api_token=huggingfacehub_api_token
-            )
+            logging.info('run loop')
 
-            # File Uploader
-            st.subheader("Upload a Document to the Knowledge Base:")
-            uploaded_file = st.file_uploader(
-                "Choose a file", 
-                type=["txt", "pdf", "csv", "xls", "xlsx", "json"]
-            )
-            process_uploaded_file(uploaded_file, openai_api_key)
+            # Initialize LangSmith tracing 
+            os.environ["LANGCHAIN_API_KEY"] = langchain_api_key 
+            os.environ["LANGCHAIN_TRACING_V2"] = "true"
+            os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
+            os.environ["LANGCHAIN_PROJECT"] = "rx-kenny-rag-streamlit-dev" # or your project name
+            initialize_tracing() 
+
+            if not st.session_state.get('init', False):
+                st.session_state['ensemble_retriever'], st.session_state['chain'] = get_chain(
+                    openai_api_key=openai_api_key,
+                    huggingfacehub_api_token=huggingfacehub_api_token
+                )
+                st.session_state['init'] = True
 
             # Chat Interface
             st.subheader("Ask questions about Equity Bank's products and services:")
-            show_ui(chain, "How can I assist you today?")
+            show_ui(st.session_state['chain'], "How can I assist you today?")
+            st.button("Reset history", on_click=reset)
 
         except Exception as e:
             logging.error(f"Error initializing application: {e}")
+            logging.exception("Exception details:") 
             st.error("Error initializing the application. Please check the logs.")
     else:
         st.stop()

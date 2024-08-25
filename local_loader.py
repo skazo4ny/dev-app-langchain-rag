@@ -7,6 +7,53 @@ from langchain.docstore.document import Document
 from langchain_community.document_loaders import TextLoader, CSVLoader, PyPDFLoader
 from langchain_community.document_loaders.excel import UnstructuredExcelLoader
 
+def load_file(filepath):
+    """Loads a single data file and returns a list of Document objects."""
+    try:
+        print(f"Loading {filepath}")
+        if filepath.suffix == '.txt':
+            loader = TextLoader(str(filepath))
+            return loader.load()
+        elif filepath.suffix == '.csv':
+            loader = CSVLoader(file_path=str(filepath))
+            return loader.load()
+        elif filepath.suffix == '.pdf':
+            loader = PyPDFLoader(str(filepath))
+            return loader.load()
+        elif filepath.suffix == '.md':
+            loader = TextLoader(str(filepath))  
+            return loader.load()
+        elif filepath.suffix == '.xls' or filepath.suffix == '.xlsx':
+            loader = UnstructuredExcelLoader(str(filepath))
+            return loader.load()
+        elif filepath.suffix == '.json':
+            with open(filepath) as f:
+                json_data = json.load(f)
+            if isinstance(json_data, list):  # Handle list of dictionaries
+                return [Document(page_content="\n".join([f"{k}: {v}" for k, v in item.items()]),
+                                 metadata={'source': str(filepath)})
+                        for item in json_data]  
+            elif isinstance(json_data, dict):  # Handle nested dictionaries
+                content = ""
+                for key, value in json_data.items():
+                    content += f"**{key}**\n\n"
+                    if isinstance(value, list):
+                        for item in value:
+                            if isinstance(item, dict):
+                                content += "\n".join([f"{k}: {v}" for k, v in item.items()]) + "\n\n"
+                            else:
+                                content += str(item) + "\n\n"
+                    else:
+                        content += str(value) + "\n\n"
+                return [Document(page_content=content, metadata={'source': str(filepath)})]
+            else:
+                print(f"Unsupported JSON structure in {filepath}")
+        else:
+            print(f"Unsupported file type: {filepath}")
+    except Exception as e:
+        print(f"Error loading {filepath}: {e}")
+        return [] # Return an empty list to avoid errors 
+
 def load_data_files(data_dir):
     """
     Loads all data files from the specified directory, handling various file types.
@@ -19,50 +66,7 @@ def load_data_files(data_dir):
     """
     docs = []
     for filepath in Path(data_dir).glob('**/*.*'):
-        try:
-            print(f"Loading {filepath}")
-            if filepath.suffix == '.txt':
-                loader = TextLoader(str(filepath))
-                docs.extend(loader.load())
-            elif filepath.suffix == '.csv':
-                loader = CSVLoader(file_path=str(filepath))
-                docs.extend(loader.load())
-            elif filepath.suffix == '.pdf':
-                loader = PyPDFLoader(str(filepath))
-                docs.extend(loader.load())
-            elif filepath.suffix == '.md':
-                # Load Markdown file as a Document using TextLoader
-                loader = TextLoader(str(filepath))  
-                docs.extend(loader.load())
-            elif filepath.suffix == '.xls' or filepath.suffix == '.xlsx':
-                loader = UnstructuredExcelLoader(str(filepath))
-                docs.extend(loader.load())
-            elif filepath.suffix == '.json':
-                with open(filepath) as f:
-                    json_data = json.load(f)
-                if isinstance(json_data, list):  # Handle list of dictionaries
-                    for item in json_data:
-                        content = "\n".join([f"{k}: {v}" for k, v in item.items()])
-                        docs.append(Document(page_content=content, metadata={'source': str(filepath)}))
-                elif isinstance(json_data, dict):  # Handle nested dictionaries
-                    content = ""
-                    for key, value in json_data.items():
-                        content += f"**{key}**\n\n"
-                        if isinstance(value, list):
-                            for item in value:
-                                if isinstance(item, dict):
-                                    content += "\n".join([f"{k}: {v}" for k, v in item.items()]) + "\n\n"
-                                else:
-                                    content += str(item) + "\n\n"
-                        else:
-                            content += str(value) + "\n\n"
-                    docs.append(Document(page_content=content, metadata={'source': str(filepath)}))
-                else:
-                    print(f"Unsupported JSON structure in {filepath}")
-            else:
-                print(f"Unsupported file type: {filepath}")
-        except Exception as e:
-            print(f"Error loading {filepath}: {e}")
+        docs.extend(load_file(filepath))
     return docs
 
 

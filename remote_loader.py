@@ -1,8 +1,12 @@
 import os
+import logging
 
 from langchain_community.document_loaders import WebBaseLoader, WikipediaLoader, OnlinePDFLoader
 from langchain.docstore.document import Document
 import requests
+
+# Configure logging (set level as needed)
+logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
 CONTENT_DIR = os.path.dirname(__file__)
 
@@ -11,8 +15,8 @@ def load_web_page(page_url):
     try:
         loader = WebBaseLoader(page_url)
         return loader.load()
-    except requests.exceptions.RequestException as e:
-        print(f"Error loading web page from {page_url}: {e}")
+    except requests.exceptions.RequestException as e: 
+        logging.error(f"Error loading web page from {page_url}: {e}") 
         return []
 
 def load_online_pdf(pdf_url):

@@ -89,12 +89,20 @@ def main():
     """
     load_dotenv()
 
-    prompt = ChatPromptTemplate.from_template("Tell me the most noteworthy books by the author {author}")
+    prompt = ChatPromptTemplate.from_template("What are the key benefits of {product} offered by Equity Bank?")
     chain = basic_chain(prompt=prompt) | StrOutputParser()
 
     try:
-        results = chain.invoke({"author": "William Faulkner"})
-        print(results)
+        products = [
+            "an Equity Ordinary Account",
+            "an Equity Home Loan", 
+            "an Equity Gold Credit Card"
+        ]
+        for product in products:
+            results = chain.invoke({"product": product})
+            print(f"Question: What are the key benefits of {product} offered by Equity Bank?")
+            print(f"Answer: {results}\n")
+
     except Exception as e:
         logging.error(f"Error during chain execution: {e}")
 

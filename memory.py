@@ -13,9 +13,13 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 
 from basic_chain import get_model
 from rag_chain import make_rag_chain
+import logging
 
+store = {}
 
-def create_memory_chain(llm, base_chain, chat_memory):
+import json
+
+def create_memory_chain(llm, base_chain):
     contextualize_q_system_prompt = """Given a chat history and the latest user question \
         which might reference context in the chat history, formulate a standalone question \
         which can be understood without the chat history. Do NOT answer the question, \
@@ -31,16 +35,19 @@ def create_memory_chain(llm, base_chain, chat_memory):
 
     runnable = contextualize_q_prompt | llm | base_chain
 
-    def get_session_history(session_id: str) -> BaseChatMessageHistory:
-        return chat_memory
+def get_session_history(session_id: str) -> BaseChatMessageHistory:
+    try:
+        if session_id not in store:
+            store[session_id] = ChatMessageHistory()
+        return store[session_id]
+    except Exception as e:
+        logging.error(f"Error getting session history: {e}")
+        # Handle the error appropriately (e.g., return a default history object)
+        return ChatMessageHistory() 
 
-    with_message_history = RunnableWithMessageHistory(
-        runnable,
-        get_session_history,
-        input_messages_key="question",
-        history_messages_key="chat_history",
-    )
-    return with_message_history
+def clean_session_history(session_id):
+    global store
+    store[session_id] = ChatMessageHistory()
 
 
 class SimpleTextRetriever(BaseRetriever):
