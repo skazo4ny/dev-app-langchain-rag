@@ -222,15 +222,6 @@ def reset(prompt_to_user="How may I help you?"):
     st.session_state['init'] = False  # Reset the init flag
     logging.info("Reset performed, chain will be reinitialized")
 
-# Initialize the chain
-try:
-    retriever = get_retriever(openai_api_key)
-    chain = create_full_chain(retriever, openai_api_key=openai_api_key)
-    st.session_state['chain'] = chain
-except Exception as e:
-    st.error(f"Error initializing the chain: {str(e)}")
-    st.stop()
-
 @traceable
 def run():
     """
