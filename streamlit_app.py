@@ -5,7 +5,7 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import streamlit as st
 import logging
 import asyncio
-from chromadb import Chroma
+from chromadb.api.models.Collection import Collection
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_community.retrievers import BM25Retriever
@@ -152,17 +152,17 @@ async def process_uploaded_file_async(uploaded_file, openai_api_key=None):
 
             # Get the persistent Chroma client 
             persist_directory = os.path.join("store", "chroma")
-            client = Chroma(persist_directory=persist_directory, embedding_function=proxy_embeddings)
+            client = PersistentClient(path=persist_directory)
 
             # Get or create the collection
-            collection = client.get_or_create_collection(name="chroma") 
+            collection = client.get_or_create_collection(name="chroma", embedding_function=proxy_embeddings)
 
             # Generate unique IDs for the documents (using UUIDs)
             import uuid
             for doc in docs:
                 doc.metadata['id'] = str(uuid.uuid4())
 
-            # Асинхронная обработк�� документов
+            # Асинхронная обработк документов
             tasks = [asyncio.create_task(process_document(doc, proxy_embeddings)) for doc in docs]
             processed_docs = await asyncio.gather(*tasks)
             
