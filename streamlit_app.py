@@ -13,7 +13,7 @@ from pathlib import Path
 from streamlit.runtime.scriptrunner.script_run_context import get_script_run_ctx
 
 # Langchain tracing
-from langsmith import initialize_tracing  # Corrected import
+from langsmith.run_helpers import traceable
 from langchain.callbacks import StreamlitCallbackHandler
 
 from ensemble import ensemble_retriever_from_docs
@@ -162,7 +162,7 @@ async def process_uploaded_file_async(uploaded_file, openai_api_key=None):
             for doc in docs:
                 doc.metadata['id'] = str(uuid.uuid4())
 
-            # Асинхронная обработк документов
+            # Асинхронная обработк документо��
             tasks = [asyncio.create_task(process_document(doc, proxy_embeddings)) for doc in docs]
             processed_docs = await asyncio.gather(*tasks)
             
@@ -194,6 +194,7 @@ def reset(prompt_to_user="How may I help you?"):
     clean_session_history(session_id)
     st.session_state.messages = [{"role": "assistant", "content": prompt_to_user}]
 
+@traceable
 def run():
     """
     Main function to run the Streamlit application.
@@ -241,12 +242,11 @@ def run():
         try:
             logging.info('run loop')
 
-            # Initialize LangSmith tracing 
+            # Set LangSmith environment variables
             os.environ["LANGCHAIN_API_KEY"] = langchain_api_key 
             os.environ["LANGCHAIN_TRACING_V2"] = "true"
             os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
             os.environ["LANGCHAIN_PROJECT"] = "rx-kenny-rag-streamlit-dev" # or your project name
-            initialize_tracing() 
 
             if not st.session_state.get('init', False):
                 st.session_state['ensemble_retriever'], st.session_state['chain'] = get_chain(
