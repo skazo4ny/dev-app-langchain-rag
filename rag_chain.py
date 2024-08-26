@@ -36,11 +36,8 @@ def get_question(input):
 
 
 def make_rag_chain(llm, retriever, rag_prompt=None):
-    # Ensure llm and retriever are not None
-    if llm is None:
-        raise ValueError("LLM cannot be None")
-    if retriever is None:
-        raise ValueError("Retriever cannot be None")
+    if llm is None or retriever is None:
+        raise ValueError("LLM and Retriever cannot be None")
 
     if rag_prompt is None:
         rag_prompt = ChatPromptTemplate.from_template(
@@ -49,8 +46,14 @@ def make_rag_chain(llm, retriever, rag_prompt=None):
             "Question: {question}"
         )
 
+    def _format_docs(docs):
+        return "\n\n".join(doc.page_content for doc in docs)
+
     rag_chain = (
-        {"context": retriever, "question": RunnablePassthrough()}
+        {
+            "context": lambda x: _format_docs(retriever.get_relevant_documents(x["question"])),
+            "question": lambda x: x["question"]
+        }
         | rag_prompt
         | llm
         | StrOutputParser()

@@ -47,10 +47,10 @@ def show_ui(qa, prompt_to_user="How may I help you?"):
                     if qa is None:
                         raise ValueError("Chain is not initialized")
                     session_id = get_script_run_ctx().session_id
-                    response = ask_question(qa, prompt, session_id)
-                    if isinstance(response, dict) and 'content' in response:
-                        st.markdown(response['content'])
-                        message = {"role": "assistant", "content": response['content']}
+                    response = ask_question(qa, {"question": prompt}, session_id)
+                    if isinstance(response, str):
+                        st.markdown(response)
+                        message = {"role": "assistant", "content": response}
                     else:
                         raise ValueError("Unexpected response format")
                 except Exception as e:

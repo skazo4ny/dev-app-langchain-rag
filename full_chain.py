@@ -2,8 +2,9 @@ import os
 import logging
 
 from dotenv import load_dotenv
-from langchain_core.messages import BaseMessage
+from langchain_core.messages import BaseMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
 
 from basic_chain import get_model
 from filter import ensemble_retriever_from_docs
@@ -24,14 +25,9 @@ def create_full_chain(retriever, openai_api_key, chat_memory=None):
 
         Context: {context}
 
-        Question: """
+        Question: {question}"""
 
-        prompt = ChatPromptTemplate.from_messages(
-            [
-                ("system", system_prompt),
-                ("human", "{question}"),
-            ]
-        )
+        prompt = ChatPromptTemplate.from_template(system_prompt)
 
         rag_chain = make_rag_chain(model, retriever, rag_prompt=prompt)
         if chat_memory:
@@ -46,8 +42,8 @@ def create_full_chain(retriever, openai_api_key, chat_memory=None):
 def ask_question(chain, query, session_id):
     """Asks a question using the provided chain and session ID."""
     try:
-        # If query is a BaseMessage, extract its content
-        if isinstance(query, BaseMessage):
+        # If query is a BaseMessage or AIMessage, extract its content
+        if isinstance(query, (BaseMessage, AIMessage)):
             query = query.content
         elif not isinstance(query, str):
             query = str(query)
