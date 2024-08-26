@@ -12,6 +12,7 @@ from ensemble import ensemble_retriever_from_docs
 from full_chain import create_full_chain, ask_question
 from local_loader import load_data_files
 from memory import clean_session_history
+from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 
 # Read API keys at the beginning
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
