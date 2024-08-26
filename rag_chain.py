@@ -49,11 +49,20 @@ def make_rag_chain(llm, retriever, rag_prompt=None):
     def _format_docs(docs):
         return "\n\n".join(doc.page_content for doc in docs)
 
+    def _get_context_and_question(input_data):
+        if isinstance(input_data, dict) and "question" in input_data:
+            question = input_data["question"]
+        elif isinstance(input_data, (str, BaseMessage)):
+            question = str(input_data)
+        else:
+            raise ValueError("Input must be a string, BaseMessage, or a dict with a 'question' key")
+        
+        relevant_docs = retriever.get_relevant_documents(question)
+        context = _format_docs(relevant_docs)
+        return {"context": context, "question": question}
+
     rag_chain = (
-        {
-            "context": lambda x: _format_docs(retriever.get_relevant_documents(x["question"])),
-            "question": lambda x: x["question"]
-        }
+        RunnableLambda(_get_context_and_question)
         | rag_prompt
         | llm
         | StrOutputParser()

@@ -42,18 +42,12 @@ def create_full_chain(retriever, openai_api_key, chat_memory=None):
 def ask_question(chain, query, session_id):
     """Asks a question using the provided chain and session ID."""
     try:
-        # If query is a BaseMessage or AIMessage, extract its content
-        if isinstance(query, (BaseMessage, AIMessage)):
-            query = query.content
-        elif not isinstance(query, str):
-            query = str(query)
-        
         if chain is None:
             logging.error("Chain is None in ask_question function")
             raise ValueError("Chain is not initialized")
         logging.info(f"Invoking chain with query: {query}")
         response = chain.invoke(
-            {"question": query},
+            query,
             config={"configurable": {"session_id": session_id}}
         )
         logging.info("Chain invocation successful")
