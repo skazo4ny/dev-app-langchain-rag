@@ -1,11 +1,10 @@
 import os
 import streamlit as st
 import logging
-from langchain_community.chat_message_histories import StreamlitChatMessageHistory
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_core.messages import BaseMessage
+from langchain_openai import OpenAIEmbeddings
 from streamlit.runtime.scriptrunner.script_run_context import get_script_run_ctx
-from openai import OpenAI
-# from langchain.llms import OpenAI
+from langchain_openai import ChatOpenAI
 from langchain_community.llms import HuggingFaceHub
 from langsmith import Client
 
@@ -70,38 +69,6 @@ def get_retriever():
         st.error("Error initializing the application. Please check the logs.")
         st.stop()
 
-def check_openai_api():
-    try:
-        client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",  # Or any other suitable model
-            messages=[{"role": "user", "content": "Say hello"}],
-            max_tokens=5
-        )
-        return True
-    except Exception as e:
-        logging.error(f"Error checking OpenAI API: {e}")
-        return False
-
-def check_huggingface_api():
-    try:
-        from huggingface_hub import hf_hub_download
-        # Try to download a small file from a public repo
-        hf_hub_download(repo_id="google/flan-t5-small", filename="config.json")
-        return True
-    except Exception as e:
-        logging.error(f"Error checking Hugging Face API: {e}")
-        return False
-
-def check_langsmith_api():
-    try:
-        client = Client()
-        client.list_projects()
-        return True
-    except Exception as e:
-        logging.error(f"Error checking LangSmith API: {e}")
-        return False
-
 def get_chain():
     try:
         logging.info('Start creating chain')
@@ -139,18 +106,6 @@ def run():
             logging.error(f"Error initializing chain: {e}")
             st.error(f"Error initializing the application: {e}. Please check the logs.")
             return
-
-    if not check_openai_api():
-        st.error("OpenAI API key is invalid or service is unavailable.")
-        st.stop()
-
-    if not check_huggingface_api():
-        st.error("Hugging Face Hub API key is invalid or service is unavailable.")
-        st.stop()
-
-    if not check_langsmith_api():
-        st.error("LangSmith API key is invalid or service is unavailable.")
-        st.stop()
 
     st.subheader("Ask questions about Equity Bank's products and services:")
     show_ui(st.session_state['chain'], "How can I assist you today?")

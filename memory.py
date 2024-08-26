@@ -9,6 +9,7 @@ from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.retrievers import BaseRetriever
+from langchain_core.runnables import RunnablePassthrough
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
 from basic_chain import get_model
@@ -33,7 +34,18 @@ def create_memory_chain(llm, base_chain, chat_memory=None):
         ]
     )
 
-    runnable = contextualize_q_prompt | llm | base_chain
+    # Create a runnable that combines the contextualization and the base chain
+    combined_chain = contextualize_q_prompt | llm | RunnablePassthrough() | base_chain
+
+    # Wrap the combined chain with RunnableWithMessageHistory
+    runnable = RunnableWithMessageHistory(
+        combined_chain,
+        get_session_history,
+        input_messages_key="question",
+        history_messages_key="chat_history"
+    )
+
+    return runnable
 
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
     try:

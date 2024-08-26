@@ -3,7 +3,8 @@ import logging
 
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from openai import OpenAI
+from langchain_openai import ChatOpenAI
+from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_community.llms import HuggingFaceHub
 from langchain_community.chat_models.huggingface import ChatHuggingFace
 from dotenv import load_dotenv
@@ -14,7 +15,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 MISTRAL_ID = "mistralai/Mistral-7B-Instruct-v0.1"
 ZEPHYR_ID = "HuggingFaceH4/zephyr-7b-beta"
 
-def get_model(repo_id="ChatGPT", **kwargs):
+def get_model(repo_id="ChatGPT", **kwargs) -> BaseChatModel:
     """
     Loads and configures the specified language model.
 
@@ -29,17 +30,7 @@ def get_model(repo_id="ChatGPT", **kwargs):
         if repo_id == "ChatGPT":
             model_name = kwargs.get("model_name", "gpt-4o-mini")
             logging.info(f"Loading OpenAI model: {model_name}")
-            client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
-            # Using OpenAI's client for chat completions
-            def _call(messages):
-                response = client.chat.completions.create(
-                    model=model_name,
-                    messages=messages,
-                    temperature=0,
-                    **kwargs
-                )
-                return response.choices[0].message.content
-            chat_model = _call
+            return ChatOpenAI(model_name=model_name, openai_api_key=os.getenv('OPENAI_API_KEY'))
         else:
             logging.info(f"Loading Hugging Face model: {repo_id}")
             huggingfacehub_api_token = kwargs.get("HUGGINGFACEHUB_API_TOKEN", None)

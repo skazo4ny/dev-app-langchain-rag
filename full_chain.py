@@ -2,7 +2,7 @@ import os
 import logging
 
 from dotenv import load_dotenv
-from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_core.messages import BaseMessage
 from langchain_core.prompts import ChatPromptTemplate
 
 from basic_chain import get_model
@@ -14,10 +14,10 @@ from rag_chain import make_rag_chain
 # Configure logging 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def create_full_chain(retriever, openai_api_key=None, chat_memory=None):
+def create_full_chain(retriever, openai_api_key, chat_memory=None):
     """Creates the full RAG chain with memory."""
     try:
-        model = get_model("ChatGPT", openai_api_key=openai_api_key)
+        model = ChatOpenAI(model_name="gpt-4o-mini", openai_api_key=openai_api_key)
         system_prompt = """You are a helpful and knowledgeable financial consultant. 
         Use the provided context from Equity Bank's products and services to answer the user's questions. 
         If you cannot find an answer in the context, inform the user that you need more information or that the question is outside your expertise. 
@@ -34,24 +34,31 @@ def create_full_chain(retriever, openai_api_key=None, chat_memory=None):
         )
 
         rag_chain = make_rag_chain(model, retriever, rag_prompt=prompt)
-        chain = create_memory_chain(model, rag_chain, chat_memory)
-        return chain
+        if chat_memory:
+            return create_memory_chain(model, rag_chain, chat_memory)
+        else:
+            return rag_chain
     except Exception as e:
         logging.error(f"Error creating full chain: {e}")
         raise
 
 
-def ask_question(chain, query, session_id, callbacks=None):
+def ask_question(chain, query, session_id):
     """Asks a question using the provided chain and session ID."""
     try:
+        # If query is a BaseMessage, extract its content
+        if isinstance(query, BaseMessage):
+            query = query.content
+        elif not isinstance(query, str):
+            query = str(query)
+        
         if chain is None:
             logging.error("Chain is None in ask_question function")
             raise ValueError("Chain is not initialized")
         logging.info(f"Invoking chain with query: {query}")
         response = chain.invoke(
             {"question": query},
-            config={"configurable": {"session_id": session_id}},
-            callbacks=callbacks
+            config={"configurable": {"session_id": session_id}}
         )
         logging.info("Chain invocation successful")
         return response

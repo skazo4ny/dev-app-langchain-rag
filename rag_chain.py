@@ -11,7 +11,7 @@ from basic_chain import basic_chain, get_model
 from remote_loader import load_wiki_articles # updated import
 from splitter import split_documents
 from vector_store import create_vector_db
-
+from local_loader import load_data_files  # Add this import
 
 def find_similar(vs, query):
     docs = vs.similarity_search(query)
@@ -35,19 +35,25 @@ def get_question(input):
         raise Exception("string or dict with 'question' key expected as RAG chain input.")
 
 
-def make_rag_chain(model, retriever, rag_prompt = None):
-    # We will use a prompt template from langchain hub.
-    if not rag_prompt:
-        rag_prompt = hub.pull("rlm/rag-prompt")
+def make_rag_chain(llm, retriever, rag_prompt=None):
+    # Ensure llm and retriever are not None
+    if llm is None:
+        raise ValueError("LLM cannot be None")
+    if retriever is None:
+        raise ValueError("Retriever cannot be None")
 
-    # And we will use the LangChain RunnablePassthrough to add some custom processing into our chain.
+    if rag_prompt is None:
+        rag_prompt = ChatPromptTemplate.from_template(
+            "Answer the question based only on the following context:\n"
+            "{context}\n\n"
+            "Question: {question}"
+        )
+
     rag_chain = (
-            {
-                "context": RunnableLambda(get_question) | retriever | format_docs,
-                "question": RunnablePassthrough()
-            }
-            | rag_prompt
-            | model
+        {"context": retriever, "question": RunnablePassthrough()}
+        | rag_prompt
+        | llm
+        | StrOutputParser()
     )
 
     return rag_chain

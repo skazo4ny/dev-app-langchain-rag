@@ -4,7 +4,8 @@ import logging
 from langchain_community.retrievers import BM25Retriever, TavilySearchAPIRetriever
 from langchain.retrievers import EnsembleRetriever
 from langchain_core.output_parsers import StrOutputParser
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
+from langchain_core.messages import BaseMessage
 
 from basic_chain import get_model
 from rag_chain import make_rag_chain
@@ -15,12 +16,18 @@ from vector_store import create_vector_db
 from dotenv import load_dotenv
 
 
+def custom_preprocessing_func(text):
+    if isinstance(text, BaseMessage):
+        text = text.content
+    return text.split() if isinstance(text, str) else []
+
+
 def ensemble_retriever_from_docs(docs, embeddings=None):
     texts = split_documents(docs)
     vs = create_vector_db(texts, embeddings)
     vs_retriever = vs.as_retriever()
 
-    bm25_retriever = BM25Retriever.from_texts([t.page_content for t in texts])
+    bm25_retriever = BM25Retriever.from_texts([t.page_content for t in texts], preprocess_func=custom_preprocessing_func)
 
     # tavily_retriever = TavilySearchAPIRetriever(k=3, include_domains=['https://ilibrary.ru/text/107'])
     tavily_retriever = MyTavilySearchAPIRetriever(k=3, include_domains=['https://equitygroupholdings.com/ke'])
