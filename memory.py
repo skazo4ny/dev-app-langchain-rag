@@ -2,14 +2,13 @@ import os
 from typing import List, Iterable, Any
 
 from dotenv import load_dotenv
-from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain.memory import ChatMessageHistory
 from langchain_core.callbacks import CallbackManagerForRetrieverRun
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.retrievers import BaseRetriever
-from langchain_core.runnables import RunnablePassthrough
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
 from basic_chain import get_model
@@ -20,7 +19,7 @@ store = {}
 
 import json
 
-def create_memory_chain(llm, base_chain, chat_memory=None):
+def create_memory_chain(llm, base_chain):
     contextualize_q_system_prompt = """Given a chat history and the latest user question \
         which might reference context in the chat history, formulate a standalone question \
         which can be understood without the chat history. Do NOT answer the question, \
@@ -34,28 +33,21 @@ def create_memory_chain(llm, base_chain, chat_memory=None):
         ]
     )
 
-    # Create a runnable that combines the contextualization and the base chain
-    combined_chain = contextualize_q_prompt | llm | RunnablePassthrough() | base_chain
+    runnable = contextualize_q_prompt | llm | base_chain
 
-    # Wrap the combined chain with RunnableWithMessageHistory
-    runnable = RunnableWithMessageHistory(
-        combined_chain,
-        get_session_history,
-        input_messages_key="question",
-        history_messages_key="chat_history"
-    )
-
-    return runnable
-
-def get_session_history(session_id: str) -> BaseChatMessageHistory:
-    try:
+    def get_session_history(session_id: str) -> BaseChatMessageHistory:
         if session_id not in store:
             store[session_id] = ChatMessageHistory()
+
         return store[session_id]
-    except Exception as e:
-        logging.error(f"Error getting session history: {e}")
-        # Handle the error appropriately (e.g., return a default history object)
-        return ChatMessageHistory() 
+
+    with_message_history = RunnableWithMessageHistory(
+        runnable,
+        get_session_history,
+        input_messages_key="question",
+        history_messages_key="chat_history",
+    )
+    return with_message_history
 
 def clean_session_history(session_id):
     global store
@@ -86,7 +78,7 @@ def main():
     model = get_model("ChatGPT")
     chat_memory = ChatMessageHistory()
 
-    system_prompt = "You are a helpful AI assistant for busy professionals trying to improve their health."
+    system_prompt = "You are a helpful AI assistant for busy professionals trying to improve their financials."
     prompt = ChatPromptTemplate.from_messages(
         [
             ("system", system_prompt),
@@ -101,8 +93,8 @@ def main():
     rag_chain = make_rag_chain(model, retriever, rag_prompt=None)
     chain = create_memory_chain(model, rag_chain, chat_memory) | StrOutputParser()
     queries = [
-        "What do I need to get from the grocery store besides milk?",
-        "Which of these items can I find at a farmer's market?",
+        "What do I need to get from the bank?",
+        "Which of these services can I find at a local bank branch?",
     ]
 
     for query in queries:

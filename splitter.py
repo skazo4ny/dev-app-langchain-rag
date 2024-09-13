@@ -5,12 +5,10 @@ from langchain.docstore.document import Document
 
 def split_documents(docs):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1500,  # Example: Increased chunk size
-        chunk_overlap=100, # Example: Added overlap 
+        chunk_size=1000,
+        chunk_overlap=0,
         length_function=len,
-        is_separator_regex=False,
-        separators=["\n\n", "\n"]  # Example: Split at double newlines or single newlines
-    )
+        is_separator_regex=False)
 
     contents = docs
     if docs and isinstance(docs[0], Document):

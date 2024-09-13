@@ -4,7 +4,6 @@ import logging
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
-from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_community.llms import HuggingFaceHub
 from langchain_community.chat_models.huggingface import ChatHuggingFace
 from dotenv import load_dotenv
@@ -15,7 +14,9 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 MISTRAL_ID = "mistralai/Mistral-7B-Instruct-v0.1"
 ZEPHYR_ID = "HuggingFaceH4/zephyr-7b-beta"
 
-def get_model(repo_id="ChatGPT", **kwargs) -> BaseChatModel:
+
+
+def get_model(repo_id="ChatGPT", **kwargs):
     """
     Loads and configures the specified language model.
 
@@ -30,7 +31,11 @@ def get_model(repo_id="ChatGPT", **kwargs) -> BaseChatModel:
         if repo_id == "ChatGPT":
             model_name = kwargs.get("model_name", "gpt-4o-mini")
             logging.info(f"Loading OpenAI model: {model_name}")
-            return ChatOpenAI(model_name=model_name, openai_api_key=os.getenv('OPENAI_API_KEY'))
+            chat_model = ChatOpenAI(
+                openai_api_key = kwargs.get("openai_api_key", None),
+                model = "gpt-4o-mini",
+                temperature = 0.3
+            )
         else:
             logging.info(f"Loading Hugging Face model: {repo_id}")
             huggingfacehub_api_token = kwargs.get("HUGGINGFACEHUB_API_TOKEN", None)
@@ -90,20 +95,12 @@ def main():
     """
     load_dotenv()
 
-    prompt = ChatPromptTemplate.from_template("What are the key benefits of {product} offered by Equity Bank?")
+    prompt = ChatPromptTemplate.from_template("Tell me the most noteworthy books by the author {author}")
     chain = basic_chain(prompt=prompt) | StrOutputParser()
 
     try:
-        products = [
-            "an Equity Ordinary Account",
-            "an Equity Home Loan", 
-            "an Equity Gold Credit Card"
-        ]
-        for product in products:
-            results = chain.invoke({"product": product})
-            print(f"Question: What are the key benefits of {product} offered by Equity Bank?")
-            print(f"Answer: {results}\n")
-
+        results = chain.invoke({"author": "William Faulkner"})
+        print(results)
     except Exception as e:
         logging.error(f"Error during chain execution: {e}")
 
